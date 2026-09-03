@@ -1,0 +1,309 @@
+/* ================================================================
+   SIKAWAS Auth Pages - Government Style
+   ================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: 'Source Sans 3', 'Segoe UI', Tahoma, sans-serif;
+}
+
+.auth-wrapper {
+    min-height: 100vh;
+    background: #EAF0FA;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+/* TOP STRIP - like government websites */
+.auth-top-strip {
+    background: #C0392B;
+    height: 5px;
+}
+
+/* GOVERNMENT HEADER BAR */
+.auth-govt-header {
+    background: #1A3A6B;
+    padding: 10px 0;
+    text-align: center;
+    border-bottom: 1px solid #122952;
+}
+
+.auth-govt-header .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.auth-govt-header .garuda-badge {
+    width: 52px;
+    height: 52px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    flex-shrink: 0;
+}
+
+.auth-govt-header .header-text h1 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.3;
+}
+
+.auth-govt-header .header-text p {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.55);
+    margin-top: 2px;
+}
+
+/* MAIN BODY */
+.auth-body-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+}
+
+/* White card - formal */
+.auth-card {
+    background: #fff;
+    border: 1px solid #BDC3C7;
+    border-radius: 4px;
+    width: 100%;
+    max-width: 460px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Card head - blue stripe with title */
+.auth-card-header {
+    background: #1A3A6B;
+    padding: 16px 24px;
+    border-bottom: 3px solid #C0392B;
+    text-align: center;
+}
+
+.auth-card-header h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.auth-card-header p {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 3px;
+}
+
+.auth-card-body {
+    padding: 24px;
+}
+
+/* Role selector */
+.role-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.role-option {
+    display: none;
+}
+
+.role-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: 3px;
+    border: 1px solid #BDC3C7;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #5D6D7E;
+    background: #F8F9FA;
+}
+
+.role-label i {
+    font-size: 14px;
+    width: 16px;
+    text-align: center;
+}
+
+.role-option:checked+.role-label {
+    border-color: #1A3A6B;
+    background: #EBF5FF;
+    color: #1A3A6B;
+    font-weight: 700;
+    box-shadow: inset 2px 0 0 #1A3A6B;
+}
+
+/* Form elements */
+.auth-card-body .form-group {
+    margin-bottom: 14px;
+}
+
+.auth-card-body .form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #1C2833;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.auth-card-body .form-control {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid #BDC3C7;
+    border-radius: 3px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.auth-card-body .form-control:focus {
+    border-color: #1A3A6B;
+    box-shadow: 0 0 0 2px rgba(26, 58, 107, 0.1);
+}
+
+.auth-card-body .input-group {
+    position: relative;
+}
+
+.auth-card-body .input-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #AAB;
+    font-size: 13px;
+    pointer-events: none;
+}
+
+.auth-card-body .input-group .form-control {
+    padding-left: 32px;
+}
+
+.toggle-pw {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #AAB;
+    font-size: 13px;
+}
+
+/* Submit btn */
+.btn-auth {
+    width: 100%;
+    padding: 10px;
+    background: #1A3A6B;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: inherit;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.btn-auth:hover {
+    background: #122952;
+}
+
+/* Error/Success msg */
+.auth-alert {
+    padding: 9px 12px;
+    border-radius: 3px;
+    font-size: 12.5px;
+    font-weight: 500;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid;
+}
+
+.auth-alert-danger {
+    background: #FDEDEC;
+    color: #7B241C;
+    border-color: #F5B7B1;
+}
+
+.auth-alert-success {
+    background: #EAFAF1;
+    color: #1E5631;
+    border-color: #A9DFBF;
+}
+
+/* Footer divider */
+.auth-card-footer {
+    padding: 12px 24px;
+    background: #F8F9FA;
+    border-top: 1px solid #E5E8EB;
+    text-align: center;
+    font-size: 12px;
+    color: #7F8C8D;
+}
+
+.auth-card-footer a {
+    color: #1A3A6B;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth-card-footer a:hover {
+    text-decoration: underline;
+}
+
+/* System info bar under card */
+.auth-footer-bar {
+    background: #1A3A6B;
+    text-align: center;
+    padding: 10px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.4);
+    border-top: 3px solid #C0392B;
+}
+/* ================================================================ MOBILE */
+@media (max-width: 600px) {
+    .auth-govt-header .header-inner {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+        padding: 10px 14px;
+    }
+    .auth-govt-header .header-text h1 { font-size: 11px; }
+    .auth-govt-header .garuda-badge { width: 40px; height: 40px; font-size: 20px; }
+    .auth-card-body { padding: 16px; }
+    .role-selector { grid-template-columns: 1fr 1fr; gap: 6px; }
+    .role-label { padding: 8px 10px; font-size: 12px; }
+    .btn-auth { padding: 12px; font-size: 14px; }
+    .auth-body-wrap { padding: 16px 12px; }
+}
