@@ -49,6 +49,7 @@ $flash = getFlash();
                     <p>Selamat datang, <?= sanitize($_SESSION['nama']) ?> 👋</p>
                 </div>
             </div>
+        </div>
             <div class="page-body">
                 <?php if ($flash): ?><div class="alert alert-<?= $flash['type'] ?>"><i class="fas fa-info-circle"></i> <?= $flash['message'] ?></div><?php endif; ?>
                 <div style="background:linear-gradient(135deg,#1e40af,#3b82f6);border-radius:16px;padding:28px 32px;margin-bottom:24px;color:#fff;position:relative;overflow:hidden">

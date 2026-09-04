@@ -48,10 +48,12 @@ $flash = getFlash();
                     <h1>Dashboard</h1>
                     <p>Selamat datang, <?= sanitize($_SESSION['nama']) ?> 👋</p>
                 </div>
-                <div class="topbar-actions">
+            </div>
+            <div class="topbar-actions">
                     <a href="buat_laporan.php" class="btn btn-primary"><i class="fas fa-plus"></i> Buat Laporan</a>
                 </div>
             </div>
+        </div>
             <div class="page-body">
                 <?php if ($flash): ?><div class="alert alert-<?= $flash['type'] ?>"><i class="fas fa-info-circle"></i> <?= $flash['message'] ?></div><?php endif; ?>
 

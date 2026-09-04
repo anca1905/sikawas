@@ -40,10 +40,12 @@ $byKawasan = $db->query("SELECT h.nama_hutan, COUNT(*) as jumlah FROM pengaduan 
                     <h1>Dashboard Pimpinan</h1>
                     <p>Ringkasan penanganan laporan kejahatan lingkungan</p>
                 </div>
-                <div class="topbar-actions">
+            </div>
+            <div class="topbar-actions">
                     <a href="rekap_laporan.php" class="btn btn-primary"><i class="fas fa-chart-bar"></i> Lihat Rekap Lengkap</a>
                 </div>
             </div>
+        </div>
             <div class="page-body">
                 <div style="background:linear-gradient(135deg,#7c3aed,#a855f7);border-radius:16px;padding:28px 32px;margin-bottom:24px;color:#fff;position:relative;overflow:hidden">
                     <div style="position:absolute;right:-30px;top:-30px;font-size:120px;opacity:.08">👔</div>
