@@ -390,9 +390,14 @@ body {
 /* ================================================================ STAT CARDS */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 14px;
     margin-bottom: 20px;
+}
+
+/* Force exactly 4 equal columns (use on pages with exactly 4 stat cards) */
+.stats-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
 }
 
 .stat-card {
@@ -402,7 +407,7 @@ body {
     padding: 16px 18px;
     box-shadow: var(--shadow);
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 14px;
     border-top: 3px solid var(--primary);
     transition: var(--transition);
@@ -425,7 +430,11 @@ body {
     flex-shrink: 0;
 }
 
-
+.stat-card .stat-info,
+.stat-card .stat-text {
+    flex: 1;
+    min-width: 0;
+}
 
 .stat-card .stat-value {
     font-size: 26px;
@@ -488,6 +497,14 @@ body {
 
 .stat-card.purple .stat-icon {
     background: #6C3483;
+}
+
+.stat-card.emerald {
+    border-top-color: #0E6655;
+}
+
+.stat-card.emerald .stat-icon {
+    background: #0E6655;
 }
 
 /* ================================================================ TABLES */
@@ -1190,8 +1207,11 @@ textarea.form-control {
 
 /* ================================================================ TABLET (max 1024px) */
 @media (max-width: 1024px) {
-    .stats-grid {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+
+    .stats-grid,
+    .stats-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
     }
 
     .filter-bar .form-group {
@@ -1254,8 +1274,9 @@ textarea.form-control {
     }
 
     /* Stats grid: 2 columns */
-    .stats-grid {
-        grid-template-columns: 1fr 1fr;
+    .stats-grid,
+    .stats-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
         gap: 10px;
     }
 
@@ -1271,11 +1292,16 @@ textarea.form-control {
     }
 
     .stat-card .stat-value {
-        font-size: 22px;
+        font-size: 20px;
     }
 
     .stat-card .stat-label {
         font-size: 10px;
+    }
+
+    /* Hide "Buat Laporan" button text on mobile topbar to save space */
+    .topbar-actions .btn-primary span {
+        display: none;
     }
 
     /* Cards */
@@ -1383,8 +1409,10 @@ textarea.form-control {
 
 /* ================================================================ SMALL MOBILE (max 480px) */
 @media (max-width: 480px) {
-    .stats-grid {
-        grid-template-columns: 1fr 1fr;
+
+    .stats-grid,
+    .stats-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
         gap: 8px;
     }
 
@@ -1392,18 +1420,22 @@ textarea.form-control {
         flex-direction: column;
         align-items: center;
         text-align: center;
-        padding: 12px 8px;
-        gap: 6px;
+        padding: 10px 6px;
+        gap: 5px;
     }
 
     .stat-card .stat-icon {
-        width: 32px;
-        height: 32px;
-        font-size: 14px;
+        width: 34px;
+        height: 34px;
+        font-size: 15px;
     }
 
     .stat-card .stat-value {
         font-size: 20px;
+    }
+
+    .stat-card .stat-label {
+        font-size: 9.5px;
     }
 
     .topbar-title h1 {
@@ -1415,9 +1447,9 @@ textarea.form-control {
         font-size: 12px;
     }
 
-    /* Hide text on icon buttons */
-    .btn-sm i+span,
-    .btn-sm span {
+    /* Hide text on icon buttons in topbar */
+    .topbar-actions .btn span,
+    .topbar-actions .btn-primary span {
         display: none;
     }
 

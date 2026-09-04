@@ -42,6 +42,20 @@ $user = $user->fetch();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
+    <style>
+        .profil-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .profil-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -49,26 +63,27 @@ $user = $user->fetch();
         <?php include ROOT_PATH . 'includes/sidebar_masyarakat.php'; ?>
         <div class="main-content">
             <div class="topbar">
-    
-    <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
-        <span></span><span></span><span></span>
-    </button>
-    <div class="topbar-left">
-                <div class="topbar-title">
-                    <h1>Profil Saya</h1>
-                    <p>Kelola informasi akun Anda</p>
+                <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+                <div class="topbar-left">
+                    <div class="topbar-title">
+                        <h1>Profil Saya</h1>
+                        <p>Kelola informasi akun Anda</p>
+                    </div>
                 </div>
             </div>
+
             <div class="page-body">
-                <div style="display:grid;grid-template-columns:300px 1fr;gap:24px">
+                <div class="profil-grid">
                     <!-- Avatar Card -->
                     <div>
-                        <div class="card" style="text-align:center;padding:32px 24px">
-                            <div style="width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#1a7a3f,#2ea055);color:#fff;font-size:36px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 24px rgba(26,122,63,.3)"><?= strtoupper(substr($user['nama'], 0, 1)) ?></div>
-                            <h3 style="font-size:18px;font-weight:700"><?= sanitize($user['nama']) ?></h3>
+                        <div class="card" style="text-align:center;padding:28px 20px">
+                            <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#1a7a3f,#2ea055);color:#fff;font-size:32px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 6px 20px rgba(26,122,63,.3)"><?= strtoupper(substr($user['nama'], 0, 1)) ?></div>
+                            <h3 style="font-size:16px;font-weight:700"><?= sanitize($user['nama']) ?></h3>
                             <p style="font-size:13px;color:#64748b;margin-top:4px">@<?= sanitize($user['username']) ?></p>
                             <div style="margin-top:12px"><span class="badge badge-done"><i class="fas fa-users"></i> Masyarakat</span></div>
-                            <div style="margin-top:20px;padding-top:16px;border-top:1px solid #f1f5f9;font-size:12px;color:#94a3b8">
+                            <div style="margin-top:16px;padding-top:14px;border-top:1px solid #f1f5f9;font-size:12px;color:#94a3b8">
                                 <p>Bergabung: <?= formatTanggal($user['created_at']) ?></p>
                             </div>
                         </div>
@@ -97,8 +112,8 @@ $user = $user->fetch();
                                         <label class="form-label">Alamat</label>
                                         <div class="input-group"><i class="fas fa-home input-icon" style="top:12px;transform:none"></i><textarea name="alamat" class="form-control" rows="3" style="padding-left:38px"><?= sanitize($user['alamat'] ?? '') ?></textarea></div>
                                     </div>
-                                    <hr style="border:none;border-top:1px solid #f1f5f9;margin:20px 0">
-                                    <h4 style="font-size:14px;font-weight:700;margin-bottom:16px">Ganti Password (Opsional)</h4>
+                                    <hr style="border:none;border-top:1px solid #f1f5f9;margin:18px 0">
+                                    <h4 style="font-size:14px;font-weight:700;margin-bottom:14px">Ganti Password (Opsional)</h4>
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label class="form-label">Password Baru</label>
@@ -119,7 +134,7 @@ $user = $user->fetch();
         </div>
     </div>
 
-<?php include ROOT_PATH . 'includes/mobile_nav.php'; ?>
+    <?php include ROOT_PATH . 'includes/mobile_nav.php'; ?>
 </body>
 
 </html>
