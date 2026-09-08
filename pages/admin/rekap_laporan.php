@@ -64,12 +64,7 @@ foreach ($laporan as $r) if (isset($sMap[$r['status']])) $sMap[$r['status']]++;
     <div class="app-layout">
         <?php include ROOT_PATH . 'includes/sidebar_admin.php'; ?>
         <div class="main-content">
-            <div class="topbar">
-    
-    <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
-        <span></span><span></span><span></span>
-    </button>
-    <div class="topbar-left">
+            <div class="topbar-left">\s*<button class="hamburger"</button>
                 <div class="topbar-title">
                     <h1>Rekap Laporan</h1>
                     <p>Rekapitulasi data laporan kejahatan</p>

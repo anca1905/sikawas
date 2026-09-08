@@ -38,12 +38,7 @@ $flash = getFlash();
     <div class="app-layout">
         <?php include ROOT_PATH . 'includes/sidebar_polisi.php'; ?>
         <div class="main-content">
-            <div class="topbar">
-    
-    <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
-        <span></span><span></span><span></span>
-    </button>
-    <div class="topbar-left">
+            <div class="topbar-left">\s*<button class="hamburger"</button>
                 <div class="topbar-title">
                     <h1>Dashboard</h1>
                     <p>Selamat datang, <?= sanitize($_SESSION['nama']) ?> 👋</p>

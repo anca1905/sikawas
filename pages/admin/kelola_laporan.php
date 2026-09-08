@@ -49,12 +49,7 @@ $jenisList = $db->query("SELECT * FROM jenis_kejahatan ORDER BY nama_jenis")->fe
     <div class="app-layout">
         <?php include ROOT_PATH . 'includes/sidebar_admin.php'; ?>
         <div class="main-content">
-            <div class="topbar">
-    
-    <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
-        <span></span><span></span><span></span>
-    </button>
-    <div class="topbar-left">
+            <div class="topbar-left">\s*<button class="hamburger"</button>
                 <div class="topbar-title">
                     <h1>Kelola Laporan</h1>
                     <p>Semua laporan kejahatan lingkungan</p>

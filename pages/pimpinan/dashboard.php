@@ -30,12 +30,7 @@ $byKawasan = $db->query("SELECT h.nama_hutan, COUNT(*) as jumlah FROM pengaduan 
     <div class="app-layout">
         <?php include ROOT_PATH . 'includes/sidebar_pimpinan.php'; ?>
         <div class="main-content">
-            <div class="topbar">
-    
-    <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
-        <span></span><span></span><span></span>
-    </button>
-    <div class="topbar-left">
+            <div class="topbar-left">\s*<button class="hamburger"</button>
                 <div class="topbar-title">
                     <h1>Dashboard Pimpinan</h1>
                     <p>Ringkasan penanganan laporan kejahatan lingkungan</p>

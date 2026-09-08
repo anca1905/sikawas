@@ -2,7 +2,12 @@
 require_once 'config/init.php';
 if (isLoggedIn()) {
     $roleMap = ['admin' => 'pages/admin/dashboard.php', 'masyarakat' => 'pages/masyarakat/dashboard.php', 'polisi' => 'pages/polisi/dashboard.php', 'pimpinan' => 'pages/pimpinan/dashboard.php'];
-    redirect(BASE_URL . ($roleMap[$_SESSION['role']] ?? 'login.php'));
+    if (isset($roleMap[$_SESSION['role']])) {
+        redirect(BASE_URL . $roleMap[$_SESSION['role']]);
+    } else {
+        session_unset();
+        session_destroy();
+    }
 }
 
 $error = '';

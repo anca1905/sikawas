@@ -25,12 +25,7 @@ $laporan = $db->query("SELECT p.*,m.nama as pelapor,j.nama_jenis,h.nama_hutan FR
     <div class="app-layout">
         <?php include ROOT_PATH . 'includes/sidebar_admin.php'; ?>
         <div class="main-content">
-            <div class="topbar">
-    
-    <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
-        <span></span><span></span><span></span>
-    </button>
-    <div class="topbar-left">
+            <div class="topbar-left">\s*<button class="hamburger"</button>
                 <div class="topbar-title">
                     <h1>Laporan Baru</h1>
                     <p>Daftar laporan yang belum diverifikasi</p>

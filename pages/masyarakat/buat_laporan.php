@@ -8,6 +8,8 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tanggal = sanitize($_POST['tanggal_kejadian'] ?? '');
     $lokasi  = sanitize($_POST['lokasi'] ?? '');
+    $latitude  = sanitize($_POST['latitude'] ?? '');
+    $longitude = sanitize($_POST['longitude'] ?? '');
     $deskripsi = sanitize($_POST['deskripsi'] ?? '');
     $id_jenis  = (int)($_POST['id_jenis'] ?? 0);
     $id_hutan  = (int)($_POST['id_hutan'] ?? 0);
@@ -16,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Semua field wajib harus diisi.';
     } else {
         $fotoPath = uploadFoto($_FILES['bukti_foto'] ?? null, 'uploads');
-        $db->prepare("INSERT INTO pengaduan (tanggal_kejadian,lokasi,deskripsi,bukti_foto,status,id_user,id_jenis,id_hutan) VALUES (?,?,?,?,?,?,?,?)")->execute([$tanggal, $lokasi, $deskripsi, $fotoPath, 'Baru', $uid, $id_jenis, $id_hutan]);
+        $db->prepare("INSERT INTO pengaduan (tanggal_kejadian,lokasi,latitude,longitude,deskripsi,bukti_foto,status,id_user,id_jenis,id_hutan) VALUES (?,?,?,?,?,?,?,?,?,?)")->execute([$tanggal, $lokasi, $latitude, $longitude, $deskripsi, $fotoPath, 'Baru', $uid, $id_jenis, $id_hutan]);
         setFlash('success', 'Laporan berhasil dikirim! Kami akan segera memverifikasi laporan Anda.');
         redirect(BASE_URL . 'pages/masyarakat/riwayat_laporan.php');
     }
@@ -34,6 +36,7 @@ $hutanList  = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan"
     <title>Buat Laporan — SIKAWAS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
     <style>
         .laporan-grid {
@@ -82,11 +85,7 @@ $hutanList  = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan"
     <div class="app-layout">
         <?php include ROOT_PATH . 'includes/sidebar_masyarakat.php'; ?>
         <div class="main-content">
-            <div class="topbar">
-                <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
-                    <span></span><span></span><span></span>
-                </button>
-                <div class="topbar-left">
+            <div class="topbar-left">\s*<button class="hamburger"</button>
                     <div class="topbar-title">
                         <h1>Buat Laporan Baru</h1>
                         <p>Laporkan kejahatan lingkungan yang Anda temukan</p>
@@ -155,6 +154,21 @@ $hutanList  = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan"
 
                         <!-- Kanan -->
                         <div>
+                            <div class="card" style="margin-bottom:16px">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-map-marked-alt" style="color:#1a7a3f;margin-right:8px"></i>Peta Lokasi</h3>
+                                    <span style="font-size:11px;color:#64748b">Pilih Lokasi</span>
+                                </div>
+                                <div class="card-body" style="padding:0">
+                                    <div id="map" style="height: 300px; width: 100%; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; z-index: 1;"></div>
+                                    <input type="hidden" name="latitude" id="latitude">
+                                    <input type="hidden" name="longitude" id="longitude">
+                                    <div style="padding: 10px; font-size: 12px; color: #64748b; background: #f8fafc; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; border-top: 1px solid #e2e8f0;">
+                                        <i class="fas fa-info-circle"></i> Klik pada peta untuk menandai lokasi kejadian.
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="card" style="margin-bottom:16px">
                                 <div class="card-header">
                                     <h3><i class="fas fa-camera" style="color:#1a7a3f;margin-right:8px"></i>Bukti Foto</h3>
@@ -235,6 +249,46 @@ $hutanList  = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan"
                 document.getElementById('fotoInput').files = dt.files;
                 previewFoto(document.getElementById('fotoInput'));
             }
+        });
+    </script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        // Inisialisasi Peta
+        // Set default ke tengah Indonesia
+        const map = L.map('map').setView([-0.789275, 113.921327], 5);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        let marker;
+
+        map.on('click', function(e) {
+            const lat = e.latlng.lat;
+            const lng = e.latlng.lng;
+            
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+            
+            if (marker) {
+                marker.setLatLng(e.latlng);
+            } else {
+                marker = L.marker(e.latlng).addTo(map);
+            }
+
+            // Reverse geocoding optional to auto-fill Lokasi textarea
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                .then(response => response.json())
+                .then(data => {
+                    if(data && data.display_name) {
+                        const textareaLokasi = document.querySelector('textarea[name="lokasi"]');
+                        if(textareaLokasi) {
+                            textareaLokasi.value = data.display_name;
+                        }
+                    }
+                })
+                .catch(err => console.error("Geocoding error: ", err));
         });
     </script>
 
