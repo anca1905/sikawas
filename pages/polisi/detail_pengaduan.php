@@ -65,14 +65,19 @@ $flash = getFlash();
     <div class="app-layout">
         <?php include ROOT_PATH . 'includes/sidebar_polisi.php'; ?>
         <div class="main-content">
-            <div class="topbar-left">\s*<button class="hamburger"</button>
-                <div class="topbar-title">
-                    <h1>Detail & Tindak Lanjut</h1>
+            <div class="topbar">
+    <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="topbar-title">
+            <h1>Detail & Tindak Lanjut</h1>
                     <p>Laporan #<?= $id ?></p>
-                </div>
-                <div class="topbar-actions"><a href="daftar_pengaduan.php" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Kembali</a></div>
-            </div>
-            <div class="page-body">
+        </div>
+    </div>
+    <div class="topbar-actions">
+        <a href="daftar_pengaduan.php" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Kembali</a>
+    </div>
+</div>
+<div class="page-body">
                 <?php if ($flash): ?><div class="alert alert-<?= $flash['type'] ?>"><i class="fas fa-info-circle"></i> <?= $flash['message'] ?></div><?php endif; ?>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
                     <div>

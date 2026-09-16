@@ -104,14 +104,19 @@ $flash = getFlash();
     <div class="app-layout">
         <?php include ROOT_PATH . 'includes/sidebar_admin.php'; ?>
         <div class="main-content">
-            <div class="topbar-left">\s*<button class="hamburger"</button>
-                <div class="topbar-title">
-                    <h1>Kawasan Hutan</h1>
+            <div class="topbar">
+    <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="topbar-title">
+            <h1>Kawasan Hutan</h1>
                     <p>Kelola data jenis kawasan hutan terdaftar</p>
-                </div>
-                <div class="topbar-actions"><button onclick="openAdd()" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah Kawasan</button></div>
-            </div>
-            <div class="page-body">
+        </div>
+    </div>
+    <div class="topbar-actions">
+        <button onclick="openAdd()" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah Kawasan</button>
+    </div>
+</div>
+<div class="page-body">
                 <?php if ($flash): ?><div class="alert alert-<?= $flash['type'] ?>"><i class="fas fa-info-circle"></i> <?= $flash['message'] ?></div><?php endif; ?>
                 <div class="card">
                     <div class="card-header">

@@ -31,19 +31,20 @@ $flash = getFlash();
     <div class="app-layout">
         <?php include ROOT_PATH . 'includes/sidebar_admin.php'; ?>
         <div class="main-content">
-            <div class="topbar-left">\s*<button class="hamburger"</button>
-                <div class="topbar-title">
-                    <h1>Dashboard</h1>
+            <div class="topbar">
+    <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="topbar-title">
+            <h1>Dashboard</h1>
                     <p>Selamat datang, <?= sanitize($_SESSION['nama']) ?> 👋</p>
-                </div>
-            </div>
-            <div class="topbar-actions">
-                    <span style="font-size:12px;color:#64748b"><?= date('d M Y') ?></span>
+        </div>
+    </div>
+    <div class="topbar-actions">
+        <span style="font-size:12px;color:#64748b"><?= date('d M Y') ?></span>
                     <a href="<?= BASE_URL ?>pages/admin/laporan_baru.php" class="btn btn-primary btn-sm"><i class="fas fa-bell"></i> Laporan Baru <?php if ($baru > 0): ?><span style="background:rgba(255,255,255,.3);border-radius:20px;padding:1px 6px"><?= $baru ?></span><?php endif; ?></a>
-                </div>
-            </div>
-
-            <div class="page-body">
+    </div>
+</div>
+<div class="page-body">
                 <?php if ($flash): ?>
                     <div class="alert alert-<?= $flash['type'] ?>"><i class="fas fa-info-circle"></i> <?= $flash['message'] ?></div>
                 <?php endif; ?>

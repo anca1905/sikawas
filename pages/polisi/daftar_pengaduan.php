@@ -33,13 +33,16 @@ $flash = getFlash();
     <div class="app-layout">
         <?php include ROOT_PATH . 'includes/sidebar_polisi.php'; ?>
         <div class="main-content">
-            <div class="topbar-left">\s*<button class="hamburger"</button>
-                <div class="topbar-title">
-                    <h1>Daftar Pengaduan</h1>
+            <div class="topbar">
+    <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="topbar-title">
+            <h1>Daftar Pengaduan</h1>
                     <p>Pengaduan yang ditugaskan kepada Anda</p>
-                </div>
-            </div>
-            <div class="page-body">
+        </div>
+    </div>
+</div>
+<div class="page-body">
                 <?php if ($flash): ?><div class="alert alert-<?= $flash['type'] ?>"><i class="fas fa-info-circle"></i> <?= $flash['message'] ?></div><?php endif; ?>
                 <form method="GET" class="filter-bar">
                     <div class="form-group"><label class="form-label">Filter Status</label>

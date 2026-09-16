@@ -25,16 +25,19 @@ $laporan = $db->query("SELECT p.*,m.nama as pelapor,j.nama_jenis,h.nama_hutan FR
     <div class="app-layout">
         <?php include ROOT_PATH . 'includes/sidebar_admin.php'; ?>
         <div class="main-content">
-            <div class="topbar-left">\s*<button class="hamburger"</button>
-                <div class="topbar-title">
-                    <h1>Laporan Baru</h1>
+            <div class="topbar">
+    <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="topbar-title">
+            <h1>Laporan Baru</h1>
                     <p>Daftar laporan yang belum diverifikasi</p>
-                </div>
-                <div class="topbar-actions">
-                    <a href="verifikasi_laporan.php" class="btn btn-primary btn-sm"><i class="fas fa-clipboard-check"></i> Ke Halaman Verifikasi</a>
-                </div>
-            </div>
-            <div class="page-body">
+        </div>
+    </div>
+    <div class="topbar-actions">
+        <a href="verifikasi_laporan.php" class="btn btn-primary btn-sm"><i class="fas fa-clipboard-check"></i> Ke Halaman Verifikasi</a>
+    </div>
+</div>
+<div class="page-body">
                 <div class="card">
                     <div class="card-header">
                         <h3><i class="fas fa-bell" style="color:#ef4444;margin-right:8px"></i>Daftar Laporan Baru

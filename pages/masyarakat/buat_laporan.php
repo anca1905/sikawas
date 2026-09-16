@@ -85,18 +85,19 @@ $hutanList  = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan"
     <div class="app-layout">
         <?php include ROOT_PATH . 'includes/sidebar_masyarakat.php'; ?>
         <div class="main-content">
-            <div class="topbar-left">\s*<button class="hamburger"</button>
-                    <div class="topbar-title">
-                        <h1>Buat Laporan Baru</h1>
+            <div class="topbar">
+    <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="topbar-title">
+            <h1>Buat Laporan Baru</h1>
                         <p>Laporkan kejahatan lingkungan yang Anda temukan</p>
-                    </div>
-                </div>
-                <div class="topbar-actions">
-                    <a href="riwayat_laporan.php" class="btn btn-secondary btn-sm"><i class="fas fa-history"></i> <span>Riwayat</span></a>
-                </div>
-            </div>
-
-            <div class="page-body">
+        </div>
+    </div>
+    <div class="topbar-actions">
+        <a href="riwayat_laporan.php" class="btn btn-secondary btn-sm"><i class="fas fa-history"></i> <span>Riwayat</span></a>
+    </div>
+</div>
+<div class="page-body">
                 <?php if ($error): ?><div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> <?= $error ?></div><?php endif; ?>
                 <div class="alert alert-info"><i class="fas fa-info-circle"></i> Isi formulir di bawah ini dengan lengkap dan akurat. Laporan Anda akan diverifikasi oleh Admin sebelum ditindaklanjuti.</div>
 

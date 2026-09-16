@@ -52,8 +52,13 @@ $flash = getFlash();
 <div class="app-layout">
 <?php include ROOT_PATH . 'includes/sidebar_admin.php'; ?>
 <div class="main-content">
-<div class="topbar-left">\s*<button class="hamburger"</button>
-    <div class="topbar-title"><h1>Jenis Kejahatan</h1><p>Kelola data master jenis kejahatan lingkungan</p></div>
+<div class="topbar">
+    <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="topbar-title">
+            <h1>Jenis Kejahatan</h1><p>Kelola data master jenis kejahatan lingkungan</p>
+        </div>
+    </div>
     <div class="topbar-actions">
         <button onclick="openAdd()" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah Jenis</button>
     </div>
@@ -72,7 +77,7 @@ $flash = getFlash();
 <tr>
     <td><?=$i+1?></td>
     <td><strong><?=sanitize($j['nama_jenis'])?></strong></td>
-    <td style="max-width:300px"><span style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden"><?=sanitize($j['keterangan'])?:</span></td>
+    <td style="max-width:300px"><span style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden"><?=sanitize($j['keterangan']) ?: '-' ?></span></td>
     <td>
         <button onclick='openEdit(<?=$j["id_jenis"]?>,<?=json_encode(sanitize($j["nama_jenis"]))?>,<?=json_encode(sanitize($j["keterangan"]))?>)' class="btn btn-accent btn-sm"><i class="fas fa-edit"></i></button>
         <button onclick='confirmDelete(<?=$j["id_jenis"]?>,<?=json_encode(sanitize($j["nama_jenis"]))?>)' class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>

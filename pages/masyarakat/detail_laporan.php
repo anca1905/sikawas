@@ -52,14 +52,19 @@ if (!$r) redirect(BASE_URL . 'pages/masyarakat/riwayat_laporan.php');
     <div class="app-layout">
         <?php include ROOT_PATH . 'includes/sidebar_masyarakat.php'; ?>
         <div class="main-content">
-            <div class="topbar-left">\s*<button class="hamburger"</button>
-                <div class="topbar-title">
-                    <h1>Detail Laporan</h1>
+            <div class="topbar">
+    <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="topbar-title">
+            <h1>Detail Laporan</h1>
                     <p>Laporan #<?= $r['id_laporan'] ?></p>
-                </div>
-                <div class="topbar-actions"><a href="riwayat_laporan.php" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Kembali</a></div>
-            </div>
-            <div class="page-body">
+        </div>
+    </div>
+    <div class="topbar-actions">
+        <a href="riwayat_laporan.php" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Kembali</a>
+    </div>
+</div>
+<div class="page-body">
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
                     <div>
                         <div class="card" style="margin-bottom:20px">

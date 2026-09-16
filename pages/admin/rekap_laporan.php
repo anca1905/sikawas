@@ -64,16 +64,19 @@ foreach ($laporan as $r) if (isset($sMap[$r['status']])) $sMap[$r['status']]++;
     <div class="app-layout">
         <?php include ROOT_PATH . 'includes/sidebar_admin.php'; ?>
         <div class="main-content">
-            <div class="topbar-left">\s*<button class="hamburger"</button>
-                <div class="topbar-title">
-                    <h1>Rekap Laporan</h1>
+            <div class="topbar">
+    <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="topbar-title">
+            <h1>Rekap Laporan</h1>
                     <p>Rekapitulasi data laporan kejahatan</p>
-                </div>
-                <div class="topbar-actions">
-                    <button onclick="window.print()" class="btn btn-primary no-print"><i class="fas fa-print"></i> Cetak</button>
-                </div>
-            </div>
-            <div class="page-body">
+        </div>
+    </div>
+    <div class="topbar-actions">
+        <button onclick="window.print()" class="btn btn-primary no-print"><i class="fas fa-print"></i> Cetak</button>
+    </div>
+</div>
+<div class="page-body">
                 <form method="GET" class="filter-bar no-print">
                     <div class="form-group"><label class="form-label">Tanggal Mulai</label><input type="date" name="tgl_mulai" class="form-control" style="width:155px" value="<?= $tglMulai ?>"></div>
                     <div class="form-group"><label class="form-label">Tanggal Akhir</label><input type="date" name="tgl_akhir" class="form-control" style="width:155px" value="<?= $tglAkhir ?>"></div>

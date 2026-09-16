@@ -30,18 +30,19 @@ $byKawasan = $db->query("SELECT h.nama_hutan, COUNT(*) as jumlah FROM pengaduan 
     <div class="app-layout">
         <?php include ROOT_PATH . 'includes/sidebar_pimpinan.php'; ?>
         <div class="main-content">
-            <div class="topbar-left">\s*<button class="hamburger"</button>
-                <div class="topbar-title">
-                    <h1>Dashboard Pimpinan</h1>
+            <div class="topbar">
+    <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="topbar-title">
+            <h1>Dashboard Pimpinan</h1>
                     <p>Ringkasan penanganan laporan kejahatan lingkungan</p>
-                </div>
-            </div>
-            <div class="topbar-actions">
-                    <a href="rekap_laporan.php" class="btn btn-primary"><i class="fas fa-chart-bar"></i> Lihat Rekap Lengkap</a>
-                </div>
-            </div>
         </div>
-            <div class="page-body">
+    </div>
+    <div class="topbar-actions">
+        <a href="rekap_laporan.php" class="btn btn-primary"><i class="fas fa-chart-bar"></i> Lihat Rekap Lengkap</a>
+    </div>
+</div>
+<div class="page-body">
                 <div style="background:linear-gradient(135deg,#7c3aed,#a855f7);border-radius:16px;padding:28px 32px;margin-bottom:24px;color:#fff;position:relative;overflow:hidden">
                     <div style="position:absolute;right:-30px;top:-30px;font-size:120px;opacity:.08">👔</div>
                     <h2 style="font-size:20px;font-weight:800;margin-bottom:6px">Halo, <?= sanitize($_SESSION['nama']) ?>!</h2>

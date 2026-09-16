@@ -62,15 +62,16 @@ $user = $user->fetch();
     <div class="app-layout">
         <?php include ROOT_PATH . 'includes/sidebar_masyarakat.php'; ?>
         <div class="main-content">
-            <div class="topbar-left">\s*<button class="hamburger"</button>
-                    <div class="topbar-title">
-                        <h1>Profil Saya</h1>
+            <div class="topbar">
+    <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="topbar-title">
+            <h1>Profil Saya</h1>
                         <p>Kelola informasi akun Anda</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="page-body">
+        </div>
+    </div>
+</div>
+<div class="page-body">
                 <div class="profil-grid">
                     <!-- Avatar Card -->
                     <div>

@@ -190,8 +190,8 @@ $flash = getFlash();
                                             </td>
                                             <td>
                                                 <a href="detail_pengaduan.php?id=<?= $r['id_laporan'] ?>" class="btn btn-info btn-sm" title="Detail"><i class="fas fa-eye"></i></a>
-                                                <button onclick="openVerif(<?= $r['id_laporan'] ?>,<?= json_encode(sanitize($r['pelapor'])) ?>)" class="btn btn-primary btn-sm" title="Verifikasi"><i class="fas fa-check"></i> Verifikasi</button>
-                                                <button onclick="openTolak(<?= $r['id_laporan'] ?>,<?= json_encode(sanitize($r['pelapor'])) ?>)" class="btn btn-danger btn-sm" title="Tolak"><i class="fas fa-times"></i></button>
+                                                <button onclick="openVerif(<?= $r['id_laporan'] ?>,<?= htmlspecialchars(json_encode(sanitize($r['pelapor']))) ?>)" class="btn btn-primary btn-sm" title="Verifikasi"><i class="fas fa-check"></i> Verifikasi</button>
+                                                <button onclick="openTolak(<?= $r['id_laporan'] ?>,<?= htmlspecialchars(json_encode(sanitize($r['pelapor']))) ?>)" class="btn btn-danger btn-sm" title="Tolak"><i class="fas fa-times"></i></button>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

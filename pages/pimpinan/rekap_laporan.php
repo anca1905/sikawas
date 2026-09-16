@@ -103,16 +103,19 @@ foreach ($laporan as $r) if (isset($sMap[$r['status']])) $sMap[$r['status']]++;
     <div class="app-layout">
         <?php include ROOT_PATH . 'includes/sidebar_pimpinan.php'; ?>
         <div class="main-content">
-            <div class="topbar-left">\s*<button class="hamburger"</button>
-                <div class="topbar-title">
-                    <h1>Rekap Laporan</h1>
+            <div class="topbar">
+    <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="topbar-title">
+            <h1>Rekap Laporan</h1>
                     <p>Rekapitulasi & analisis data laporan</p>
-                </div>
-                <div class="topbar-actions">
-                    <button onclick="window.print()" class="btn btn-primary no-print"><i class="fas fa-print"></i> Cetak Laporan</button>
-                </div>
-            </div>
-            <div class="page-body">
+        </div>
+    </div>
+    <div class="topbar-actions">
+        <button onclick="window.print()" class="btn btn-primary no-print"><i class="fas fa-print"></i> Cetak Laporan</button>
+    </div>
+</div>
+<div class="page-body">
                 <!-- Print Kop -->
                 <div class="print-kop">
                     <h1>🌿 REKAP LAPORAN KEJAHATAN LINGKUNGAN DI KAWASAN HUTAN</h1>

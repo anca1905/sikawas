@@ -69,19 +69,22 @@ if (!$r) redirect(BASE_URL . 'pages/admin/kelola_laporan.php');
     <div class="app-layout">
         <?php include ROOT_PATH . 'includes/sidebar_admin.php'; ?>
         <div class="main-content">
-            <div class="topbar-left">\s*<button class="hamburger"</button>
-                <div class="topbar-title">
-                    <h1>Detail Pengaduan</h1>
+            <div class="topbar">
+    <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="topbar-title">
+            <h1>Detail Pengaduan</h1>
                     <p>Laporan #<?= $id ?></p>
-                </div>
-                <div class="topbar-actions">
-                    <a href="javascript:history.back()" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Kembali</a>
+        </div>
+    </div>
+    <div class="topbar-actions">
+        <a href="javascript:history.back()" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Kembali</a>
                     <?php if ($r['status'] === 'Baru'): ?>
                         <a href="verifikasi_laporan.php" class="btn btn-primary btn-sm"><i class="fas fa-check"></i> Verifikasi</a>
                     <?php endif; ?>
-                </div>
-            </div>
-            <div class="page-body">
+    </div>
+</div>
+<div class="page-body">
                 <div class="detail-grid">
                     <!-- Kiri: Info Laporan -->
                     <div>
