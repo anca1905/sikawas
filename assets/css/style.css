@@ -413,9 +413,15 @@ body {
     transition: var(--transition);
 }
 
+a.stat-card {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
 .stat-card:hover {
     box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
+    transform: translateY(-3px);
 }
 
 .stat-card .stat-icon {

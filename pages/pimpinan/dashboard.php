@@ -31,49 +31,61 @@ $byKawasan = $db->query("SELECT h.nama_hutan, COUNT(*) as jumlah FROM pengaduan 
         <?php include ROOT_PATH . 'includes/sidebar_pimpinan.php'; ?>
         <div class="main-content">
             <div class="topbar">
-    <div class="topbar-left">
-        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-        <div class="topbar-title">
-            <h1>Dashboard Pimpinan</h1>
-                    <p>Ringkasan penanganan laporan kejahatan lingkungan</p>
-        </div>
-    </div>
-    <div class="topbar-actions">
-        <a href="rekap_laporan.php" class="btn btn-primary"><i class="fas fa-chart-bar"></i> Lihat Rekap Lengkap</a>
-    </div>
-</div>
-<div class="page-body">
+                <div class="topbar-left">
+                    <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <div class="topbar-title">
+                        <h1>Dashboard Pimpinan</h1>
+                        <p>Ringkasan penanganan laporan kejahatan lingkungan</p>
+                    </div>
+                </div>
+                <div class="topbar-actions">
+                    <a href="rekap_laporan.php" class="btn btn-primary"><i class="fas fa-chart-bar"></i> Lihat Rekap Lengkap</a>
+                </div>
+            </div>
+            <div class="page-body">
                 <div style="background:linear-gradient(135deg,#7c3aed,#a855f7);border-radius:16px;padding:28px 32px;margin-bottom:24px;color:#fff;position:relative;overflow:hidden">
                     <div style="position:absolute;right:-30px;top:-30px;font-size:120px;opacity:.08">👔</div>
                     <h2 style="font-size:20px;font-weight:800;margin-bottom:6px">Halo, <?= sanitize($_SESSION['nama']) ?>!</h2>
                     <p style="opacity:.8;font-size:14px">Berikut adalah ringkasan data laporan kejahatan lingkungan di kawasan hutan.</p>
                 </div>
+                
+                <!-- Stats (Bisa diklik untuk filter rekap) -->
                 <div class="stats-grid">
-                    <div class="stat-card green">
+                    <a href="rekap_laporan.php" class="stat-card green" title="Klik untuk lihat semua laporan">
                         <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
-                        <div class="stat-value"><?= $total ?></div>
-                        <div class="stat-label">Total Semua Laporan</div>
-                    </div>
-                    <div class="stat-card amber">
+                        <div class="stat-text">
+                            <div class="stat-value"><?= $total ?></div>
+                            <div class="stat-label">Total Semua Laporan</div>
+                        </div>
+                    </a>
+                    <a href="rekap_laporan.php?status=Baru" class="stat-card amber" title="Klik untuk filter laporan baru">
                         <div class="stat-icon"><i class="fas fa-clock"></i></div>
-                        <div class="stat-value"><?= $baru ?></div>
-                        <div class="stat-label">Laporan Baru</div>
-                    </div>
-                    <div class="stat-card blue">
+                        <div class="stat-text">
+                            <div class="stat-value"><?= $baru ?></div>
+                            <div class="stat-label">Laporan Baru</div>
+                        </div>
+                    </a>
+                    <a href="rekap_laporan.php?status=Diverifikasi" class="stat-card blue" title="Klik untuk filter laporan diverifikasi">
                         <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
-                        <div class="stat-value"><?= $diverif ?></div>
-                        <div class="stat-label">Diverifikasi</div>
-                    </div>
-                    <div class="stat-card green" style="--primary:#8b5cf6">
+                        <div class="stat-text">
+                            <div class="stat-value"><?= $diverif ?></div>
+                            <div class="stat-label">Diverifikasi</div>
+                        </div>
+                    </a>
+                    <a href="rekap_laporan.php?status=Diproses" class="stat-card green" style="--primary:#8b5cf6" title="Klik untuk filter laporan diproses">
                         <div class="stat-icon" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa)"><i class="fas fa-spinner"></i></div>
-                        <div class="stat-value"><?= $proses ?></div>
-                        <div class="stat-label">Diproses</div>
-                    </div>
-                    <div class="stat-card emerald">
+                        <div class="stat-text">
+                            <div class="stat-value"><?= $proses ?></div>
+                            <div class="stat-label">Diproses</div>
+                        </div>
+                    </a>
+                    <a href="rekap_laporan.php?status=Selesai" class="stat-card emerald" title="Klik untuk filter laporan selesai">
                         <div class="stat-icon"><i class="fas fa-check-double"></i></div>
-                        <div class="stat-value"><?= $selesai ?></div>
-                        <div class="stat-label">Selesai</div>
-                    </div>
+                        <div class="stat-text">
+                            <div class="stat-value"><?= $selesai ?></div>
+                            <div class="stat-label">Selesai</div>
+                        </div>
+                    </a>
                 </div>
 
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
@@ -117,7 +129,7 @@ $byKawasan = $db->query("SELECT h.nama_hutan, COUNT(*) as jumlah FROM pengaduan 
         </div>
     </div>
 
-<?php include ROOT_PATH . 'includes/mobile_nav.php'; ?>
+    <?php include ROOT_PATH . 'includes/mobile_nav.php'; ?>
 </body>
 
 </html>

@@ -39,46 +39,58 @@ $flash = getFlash();
         <?php include ROOT_PATH . 'includes/sidebar_polisi.php'; ?>
         <div class="main-content">
             <div class="topbar">
-    <div class="topbar-left">
-        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-        <div class="topbar-title">
-            <h1>Dashboard</h1>
-                    <p>Selamat datang, <?= sanitize($_SESSION['nama']) ?> 👋</p>
-        </div>
-    </div>
-</div>
-<div class="page-body">
+                <div class="topbar-left">
+                    <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <div class="topbar-title">
+                        <h1>Dashboard</h1>
+                        <p>Selamat datang, <?= sanitize($_SESSION['nama']) ?> 👋</p>
+                    </div>
+                </div>
+            </div>
+            <div class="page-body">
                 <?php if ($flash): ?><div class="alert alert-<?= $flash['type'] ?>"><i class="fas fa-info-circle"></i> <?= $flash['message'] ?></div><?php endif; ?>
                 <div style="background:linear-gradient(135deg,#1e40af,#3b82f6);border-radius:16px;padding:28px 32px;margin-bottom:24px;color:#fff;position:relative;overflow:hidden">
                     <div style="position:absolute;right:-30px;top:-30px;font-size:120px;opacity:.08">🛡️</div>
                     <h2 style="font-size:20px;font-weight:800;margin-bottom:6px">Halo, <?= sanitize($_SESSION['nama']) ?>!</h2>
                     <p style="opacity:.8;font-size:14px">Anda memiliki <strong><?= $baru ?></strong> pengaduan baru yang menunggu ditindaklanjuti.</p>
                 </div>
+
+                <!-- Stats (Bisa diklik untuk filter) -->
                 <div class="stats-grid">
-                    <div class="stat-card green">
+                    <a href="daftar_pengaduan.php" class="stat-card green" title="Klik untuk lihat semua pengaduan ditugaskan">
                         <div class="stat-icon"><i class="fas fa-list-ul"></i></div>
-                        <div class="stat-value"><?= $total ?></div>
-                        <div class="stat-label">Total Ditugaskan</div>
-                    </div>
-                    <div class="stat-card amber">
+                        <div class="stat-text">
+                            <div class="stat-value"><?= $total ?></div>
+                            <div class="stat-label">Total Ditugaskan</div>
+                        </div>
+                    </a>
+                    <a href="daftar_pengaduan.php?status=Diverifikasi" class="stat-card amber" title="Klik untuk filter laporan baru masuk">
                         <div class="stat-icon"><i class="fas fa-bell"></i></div>
-                        <div class="stat-value"><?= $baru ?></div>
-                        <div class="stat-label">Baru Masuk</div>
-                    </div>
-                    <div class="stat-card blue">
+                        <div class="stat-text">
+                            <div class="stat-value"><?= $baru ?></div>
+                            <div class="stat-label">Baru Masuk</div>
+                        </div>
+                    </a>
+                    <a href="daftar_pengaduan.php?status=Diproses" class="stat-card blue" title="Klik untuk filter laporan sedang diproses">
                         <div class="stat-icon"><i class="fas fa-spinner"></i></div>
-                        <div class="stat-value"><?= $proses ?></div>
-                        <div class="stat-label">Sedang Diproses</div>
-                    </div>
-                    <div class="stat-card emerald">
+                        <div class="stat-text">
+                            <div class="stat-value"><?= $proses ?></div>
+                            <div class="stat-label">Sedang Diproses</div>
+                        </div>
+                    </a>
+                    <a href="daftar_pengaduan.php?status=Selesai" class="stat-card emerald" title="Klik untuk filter laporan selesai">
                         <div class="stat-icon"><i class="fas fa-check-double"></i></div>
-                        <div class="stat-value"><?= $selesai ?></div>
-                        <div class="stat-label">Selesai</div>
-                    </div>
+                        <div class="stat-text">
+                            <div class="stat-value"><?= $selesai ?></div>
+                            <div class="stat-label">Selesai</div>
+                        </div>
+                    </a>
                 </div>
+
                 <div class="card">
                     <div class="card-header">
-                        <h3><i class="fas fa-list-ul" style="color:#1a7a3f;margin-right:8px"></i>Pengaduan Terbaru</h3><a href="daftar_pengaduan.php" class="btn btn-secondary btn-sm">Lihat Semua</a>
+                        <h3><i class="fas fa-list-ul" style="color:#1a7a3f;margin-right:8px"></i>Pengaduan Terbaru</h3>
+                        <a href="daftar_pengaduan.php" class="btn btn-secondary btn-sm">Lihat Semua</a>
                     </div>
                     <div class="table-responsive">
                         <?php if (count($recent) > 0): ?>
@@ -105,7 +117,7 @@ $flash = getFlash();
                                             <td><?= sanitize($r['lokasi']) ?></td>
                                             <td><?= formatTanggal($r['tanggal_lapor']) ?></td>
                                             <td><?= getStatusBadge($r['status']) ?></td>
-                                            <td><a href="detail_pengaduan.php?id=<?= $r['id_laporan'] ?>" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a></td>
+                                            <td><a href="detail_pengaduan.php?id=<?= $r['id_laporan'] ?>" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</a></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -123,7 +135,7 @@ $flash = getFlash();
         </div>
     </div>
 
-<?php include ROOT_PATH . 'includes/mobile_nav.php'; ?>
+    <?php include ROOT_PATH . 'includes/mobile_nav.php'; ?>
 </body>
 
 </html>

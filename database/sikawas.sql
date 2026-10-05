@@ -80,6 +80,8 @@ CREATE TABLE IF NOT EXISTS pengaduan (
     id_laporan INT AUTO_INCREMENT PRIMARY KEY,
     tanggal_kejadian DATE NOT NULL,
     lokasi VARCHAR(255) NOT NULL,
+    latitude VARCHAR(50) NULL,
+    longitude VARCHAR(50) NULL,
     deskripsi TEXT NOT NULL,
     bukti_foto VARCHAR(255),
     status ENUM('Baru','Diverifikasi','Diproses','Selesai','Ditolak') DEFAULT 'Baru',

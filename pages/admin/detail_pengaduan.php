@@ -25,41 +25,42 @@ if (!$r) redirect(BASE_URL . 'pages/admin/kelola_laporan.php');
     <title>Detail Pengaduan #<?= $id ?> — SIKAWAS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
     <style>
         .detail-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 24px
+            gap: 24px;
         }
 
         .info-row {
             display: flex;
             gap: 12px;
             padding: 12px 0;
-            border-bottom: 1px solid #f1f5f9
+            border-bottom: 1px solid #f1f5f9;
         }
 
         .info-row:last-child {
-            border-bottom: none
+            border-bottom: none;
         }
 
         .info-label {
             font-size: 12px;
             font-weight: 600;
             color: #64748b;
-            min-width: 130px
+            min-width: 130px;
         }
 
         .info-val {
             font-size: 13px;
             color: #1e293b;
-            font-weight: 500
+            font-weight: 500;
         }
 
         @media(max-width:768px) {
             .detail-grid {
-                grid-template-columns: 1fr
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -70,27 +71,28 @@ if (!$r) redirect(BASE_URL . 'pages/admin/kelola_laporan.php');
         <?php include ROOT_PATH . 'includes/sidebar_admin.php'; ?>
         <div class="main-content">
             <div class="topbar">
-    <div class="topbar-left">
-        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-        <div class="topbar-title">
-            <h1>Detail Pengaduan</h1>
-                    <p>Laporan #<?= $id ?></p>
-        </div>
-    </div>
-    <div class="topbar-actions">
-        <a href="javascript:history.back()" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Kembali</a>
+                <div class="topbar-left">
+                    <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <div class="topbar-title">
+                        <h1>Detail Pengaduan</h1>
+                        <p>Laporan #<?= $id ?></p>
+                    </div>
+                </div>
+                <div class="topbar-actions">
+                    <a href="javascript:history.back()" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Kembali</a>
                     <?php if ($r['status'] === 'Baru'): ?>
                         <a href="verifikasi_laporan.php" class="btn btn-primary btn-sm"><i class="fas fa-check"></i> Verifikasi</a>
                     <?php endif; ?>
-    </div>
-</div>
-<div class="page-body">
+                </div>
+            </div>
+            <div class="page-body">
                 <div class="detail-grid">
-                    <!-- Kiri: Info Laporan -->
+                    <!-- Kiri: Info Laporan & Status Penanganan -->
                     <div>
                         <div class="card" style="margin-bottom:20px">
                             <div class="card-header">
-                                <h3><i class="fas fa-file-alt" style="color:#1a7a3f;margin-right:8px"></i>Informasi Laporan</h3><?= getStatusBadge($r['status']) ?>
+                                <h3><i class="fas fa-file-alt" style="color:#1a7a3f;margin-right:8px"></i>Informasi Laporan</h3>
+                                <?= getStatusBadge($r['status']) ?>
                             </div>
                             <div class="card-body">
                                 <div class="info-row"><span class="info-label"><i class="fas fa-hashtag" style="color:#1a7a3f;margin-right:6px"></i>ID Laporan</span><span class="info-val">#<?= $r['id_laporan'] ?></span></div>
@@ -103,7 +105,7 @@ if (!$r) redirect(BASE_URL . 'pages/admin/kelola_laporan.php');
                             </div>
                         </div>
 
-                        <!-- Penanganan -->
+                        <!-- Status Penanganan -->
                         <div class="card">
                             <div class="card-header">
                                 <h3><i class="fas fa-shield-alt" style="color:#1a7a3f;margin-right:8px"></i>Status Penanganan</h3>
@@ -155,8 +157,39 @@ if (!$r) redirect(BASE_URL . 'pages/admin/kelola_laporan.php');
                         </div>
                     </div>
 
-                    <!-- Kanan: Pelapor & Foto -->
+                    <!-- Kanan: Peta Lokasi Kejadian, Data Pelapor & Foto -->
                     <div>
+                        <!-- Peta Lokasi Kejadian (Maps) -->
+                        <div class="card" style="margin-bottom:20px">
+                            <div class="card-header">
+                                <h3><i class="fas fa-map-marked-alt" style="color:#1a7a3f;margin-right:8px"></i>Peta Lokasi Kejadian</h3>
+                                <?php if (!empty($r['latitude']) && !empty($r['longitude'])): ?>
+                                    <a href="https://www.google.com/maps?q=<?= $r['latitude'] ?>,<?= $r['longitude'] ?>" target="_blank" class="btn btn-secondary btn-sm" style="font-size:11px">
+                                        <i class="fas fa-external-link-alt"></i> Buka Google Maps
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                            <div class="card-body" style="padding:0">
+                                <div id="mapDetail" style="height:280px;width:100%;z-index:1"></div>
+                                <div style="padding:12px 14px;background:#f8fafc;border-top:1px solid #e2e8f0;display:flex;flex-direction:column;gap:6px">
+                                    <div style="font-size:12px;color:#1e293b;display:flex;align-items:center;gap:6px">
+                                        <i class="fas fa-map-pin" style="color:#ef4444"></i>
+                                        <strong>Koordinat:</strong>
+                                        <?php if (!empty($r['latitude']) && !empty($r['longitude'])): ?>
+                                            <span style="font-family:monospace;background:#e2e8f0;padding:2px 8px;border-radius:4px;font-weight:600"><?= sanitize($r['latitude']) ?>, <?= sanitize($r['longitude']) ?></span>
+                                        <?php else: ?>
+                                            <span style="color:#94a3b8;font-style:italic">Tidak ada koordinat GPS (perkiraan lokasi otomatis)</span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div style="font-size:11.5px;color:#64748b">
+                                        <i class="fas fa-map-marker-alt" style="color:#1a7a3f;margin-right:4px"></i>
+                                        <strong>Lokasi:</strong> <?= sanitize($r['lokasi']) ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Data Pelapor -->
                         <div class="card" style="margin-bottom:20px">
                             <div class="card-header">
                                 <h3><i class="fas fa-user" style="color:#1a7a3f;margin-right:8px"></i>Data Pelapor</h3>
@@ -173,6 +206,7 @@ if (!$r) redirect(BASE_URL . 'pages/admin/kelola_laporan.php');
                             </div>
                         </div>
 
+                        <!-- Bukti Foto -->
                         <?php if ($r['bukti_foto']): ?>
                             <div class="card">
                                 <div class="card-header">
@@ -200,7 +234,42 @@ if (!$r) redirect(BASE_URL . 'pages/admin/kelola_laporan.php');
         </div>
     </div>
 
-<?php include ROOT_PATH . 'includes/mobile_nav.php'; ?>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        const reportLat = <?= !empty($r['latitude']) ? (float)$r['latitude'] : 'null' ?>;
+        const reportLng = <?= !empty($r['longitude']) ? (float)$r['longitude'] : 'null' ?>;
+        const lokasiText = <?= json_encode($r['lokasi']) ?>;
+        const jenisText = <?= json_encode($r['nama_jenis']) ?>;
+
+        const mapDetail = L.map('mapDetail');
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(mapDetail);
+
+        if (reportLat !== null && reportLng !== null) {
+            mapDetail.setView([reportLat, reportLng], 14);
+            const m = L.marker([reportLat, reportLng]).addTo(mapDetail);
+            m.bindPopup(`<b>Lokasi Kejadian #${<?= (int)$r['id_laporan'] ?>}</b><br><b>Jenis:</b> ${jenisText}<br><b>Lokasi:</b> ${lokasiText}<br><b>Koordinat:</b> ${reportLat}, ${reportLng}`).openPopup();
+        } else {
+            // Default center Sultra / Pomalaa jika koordinat tidak ada
+            mapDetail.setView([-4.18, 121.60], 7);
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(lokasiText)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lon = parseFloat(data[0].lon);
+                        mapDetail.setView([lat, lon], 12);
+                        L.marker([lat, lon]).addTo(mapDetail)
+                            .bindPopup(`<b>Perkiraan Lokasi</b><br>${lokasiText}`).openPopup();
+                    }
+                })
+                .catch(e => console.log('Geocoding fallback:', e));
+        }
+    </script>
+
+    <?php include ROOT_PATH . 'includes/mobile_nav.php'; ?>
 </body>
 
 </html>

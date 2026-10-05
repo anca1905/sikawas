@@ -39,18 +39,18 @@ $flash = getFlash();
         <?php include ROOT_PATH . 'includes/sidebar_masyarakat.php'; ?>
         <div class="main-content">
             <div class="topbar">
-    <div class="topbar-left">
-        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-        <div class="topbar-title">
-            <h1>Dashboard</h1>
+                <div class="topbar-left">
+                    <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <div class="topbar-title">
+                        <h1>Dashboard</h1>
                         <p>Selamat datang, <?= sanitize($_SESSION['nama']) ?> 👋</p>
-        </div>
-    </div>
-    <div class="topbar-actions">
-        <a href="buat_laporan.php" class="btn btn-primary"><i class="fas fa-plus"></i> <span>Buat Laporan</span></a>
-    </div>
-</div>
-<div class="page-body">
+                    </div>
+                </div>
+                <div class="topbar-actions">
+                    <a href="buat_laporan.php" class="btn btn-primary"><i class="fas fa-plus"></i> <span>Buat Laporan</span></a>
+                </div>
+            </div>
+            <div class="page-body">
                 <?php if ($flash): ?><div class="alert alert-<?= $flash['type'] ?>"><i class="fas fa-info-circle"></i> <?= $flash['message'] ?></div><?php endif; ?>
 
                 <!-- Hero Card -->
@@ -63,35 +63,36 @@ $flash = getFlash();
                     </a>
                 </div>
 
+                <!-- Stats (Bisa diklik untuk filter) -->
                 <div class="stats-grid stats-grid-4">
-                    <div class="stat-card green">
+                    <a href="riwayat_laporan.php" class="stat-card green" title="Klik untuk lihat semua laporan saya">
                         <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
                         <div class="stat-info">
                             <div class="stat-value"><?= $total ?></div>
                             <div class="stat-label">Total Laporan Saya</div>
                         </div>
-                    </div>
-                    <div class="stat-card amber">
+                    </a>
+                    <a href="riwayat_laporan.php?status=Baru" class="stat-card amber" title="Klik untuk filter laporan menunggu verifikasi">
                         <div class="stat-icon"><i class="fas fa-clock"></i></div>
                         <div class="stat-info">
                             <div class="stat-value"><?= $baru ?></div>
                             <div class="stat-label">Menunggu Verifikasi</div>
                         </div>
-                    </div>
-                    <div class="stat-card blue">
+                    </a>
+                    <a href="riwayat_laporan.php?status=Diproses" class="stat-card blue" title="Klik untuk filter laporan sedang diproses">
                         <div class="stat-icon"><i class="fas fa-spinner"></i></div>
                         <div class="stat-info">
                             <div class="stat-value"><?= $proses ?></div>
                             <div class="stat-label">Sedang Diproses</div>
                         </div>
-                    </div>
-                    <div class="stat-card emerald">
+                    </a>
+                    <a href="riwayat_laporan.php?status=Selesai" class="stat-card emerald" title="Klik untuk filter laporan selesai">
                         <div class="stat-icon"><i class="fas fa-check-double"></i></div>
                         <div class="stat-info">
                             <div class="stat-value"><?= $selesai ?></div>
                             <div class="stat-label">Selesai Ditangani</div>
                         </div>
-                    </div>
+                    </a>
                 </div>
 
                 <div class="card">
@@ -122,7 +123,7 @@ $flash = getFlash();
                                             <td><?= sanitize($r['lokasi']) ?></td>
                                             <td><?= formatTanggal($r['tanggal_lapor']) ?></td>
                                             <td><?= getStatusBadge($r['status']) ?></td>
-                                            <td><a href="detail_laporan.php?id=<?= $r['id_laporan'] ?>" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a></td>
+                                            <td><a href="detail_laporan.php?id=<?= $r['id_laporan'] ?>" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</a></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>

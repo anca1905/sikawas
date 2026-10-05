@@ -20,30 +20,31 @@ if (!$r) redirect(BASE_URL . 'pages/masyarakat/riwayat_laporan.php');
     <title>Detail Laporan — SIKAWAS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
     <style>
         .info-row {
             display: flex;
             gap: 12px;
             padding: 12px 0;
-            border-bottom: 1px solid #f1f5f9
+            border-bottom: 1px solid #f1f5f9;
         }
 
         .info-row:last-child {
-            border-bottom: none
+            border-bottom: none;
         }
 
         .info-label {
             font-size: 12px;
             font-weight: 600;
             color: #64748b;
-            min-width: 130px
+            min-width: 130px;
         }
 
         .info-val {
             font-size: 13px;
             color: #1e293b;
-            font-weight: 500
+            font-weight: 500;
         }
     </style>
 </head>
@@ -53,19 +54,20 @@ if (!$r) redirect(BASE_URL . 'pages/masyarakat/riwayat_laporan.php');
         <?php include ROOT_PATH . 'includes/sidebar_masyarakat.php'; ?>
         <div class="main-content">
             <div class="topbar">
-    <div class="topbar-left">
-        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-        <div class="topbar-title">
-            <h1>Detail Laporan</h1>
-                    <p>Laporan #<?= $r['id_laporan'] ?></p>
-        </div>
-    </div>
-    <div class="topbar-actions">
-        <a href="riwayat_laporan.php" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Kembali</a>
-    </div>
-</div>
-<div class="page-body">
+                <div class="topbar-left">
+                    <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <div class="topbar-title">
+                        <h1>Detail Laporan</h1>
+                        <p>Laporan #<?= $r['id_laporan'] ?></p>
+                    </div>
+                </div>
+                <div class="topbar-actions">
+                    <a href="riwayat_laporan.php" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Kembali</a>
+                </div>
+            </div>
+            <div class="page-body">
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+                    <!-- Kiri: Detail Laporan & Bukti Foto -->
                     <div>
                         <div class="card" style="margin-bottom:20px">
                             <div class="card-header">
@@ -81,6 +83,37 @@ if (!$r) redirect(BASE_URL . 'pages/masyarakat/riwayat_laporan.php');
                                 <div class="info-row" style="flex-direction:column;gap:6px"><span class="info-label">Deskripsi</span><span class="info-val" style="background:#f8fafc;padding:12px;border-radius:8px;line-height:1.7"><?= nl2br(sanitize($r['deskripsi'])) ?></span></div>
                             </div>
                         </div>
+
+                        <!-- Peta Lokasi Kejadian (Maps) -->
+                        <div class="card" style="margin-bottom:20px">
+                            <div class="card-header">
+                                <h3><i class="fas fa-map-marked-alt" style="color:#1a7a3f;margin-right:8px"></i>Peta Lokasi Kejadian</h3>
+                                <?php if (!empty($r['latitude']) && !empty($r['longitude'])): ?>
+                                    <a href="https://www.google.com/maps?q=<?= $r['latitude'] ?>,<?= $r['longitude'] ?>" target="_blank" class="btn btn-secondary btn-sm" style="font-size:11px">
+                                        <i class="fas fa-external-link-alt"></i> Buka Google Maps
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                            <div class="card-body" style="padding:0">
+                                <div id="mapMasyarakat" style="height:270px;width:100%;z-index:1"></div>
+                                <div style="padding:12px 14px;background:#f8fafc;border-top:1px solid #e2e8f0;display:flex;flex-direction:column;gap:6px">
+                                    <div style="font-size:12px;color:#1e293b;display:flex;align-items:center;gap:6px">
+                                        <i class="fas fa-map-pin" style="color:#ef4444"></i>
+                                        <strong>Koordinat:</strong>
+                                        <?php if (!empty($r['latitude']) && !empty($r['longitude'])): ?>
+                                            <span style="font-family:monospace;background:#e2e8f0;padding:2px 8px;border-radius:4px;font-weight:600"><?= sanitize($r['latitude']) ?>, <?= sanitize($r['longitude']) ?></span>
+                                        <?php else: ?>
+                                            <span style="color:#94a3b8;font-style:italic">Tidak ada koordinat GPS khusus</span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div style="font-size:11.5px;color:#64748b">
+                                        <i class="fas fa-map-marker-alt" style="color:#1a7a3f;margin-right:4px"></i>
+                                        <strong>Lokasi:</strong> <?= sanitize($r['lokasi']) ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <?php if ($r['bukti_foto']): ?>
                             <div class="card">
                                 <div class="card-header">
@@ -90,6 +123,8 @@ if (!$r) redirect(BASE_URL . 'pages/masyarakat/riwayat_laporan.php');
                             </div>
                         <?php endif; ?>
                     </div>
+
+                    <!-- Kanan: Status Penanganan -->
                     <div>
                         <div class="card">
                             <div class="card-header">
@@ -142,7 +177,41 @@ if (!$r) redirect(BASE_URL . 'pages/masyarakat/riwayat_laporan.php');
         </div>
     </div>
 
-<?php include ROOT_PATH . 'includes/mobile_nav.php'; ?>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        const reportLat = <?= !empty($r['latitude']) ? (float)$r['latitude'] : 'null' ?>;
+        const reportLng = <?= !empty($r['longitude']) ? (float)$r['longitude'] : 'null' ?>;
+        const lokasiText = <?= json_encode($r['lokasi']) ?>;
+        const jenisText = <?= json_encode($r['nama_jenis']) ?>;
+
+        const mapMasyarakat = L.map('mapMasyarakat');
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(mapMasyarakat);
+
+        if (reportLat !== null && reportLng !== null) {
+            mapMasyarakat.setView([reportLat, reportLng], 14);
+            const m = L.marker([reportLat, reportLng]).addTo(mapMasyarakat);
+            m.bindPopup(`<b>Titik Kejadian #${<?= (int)$r['id_laporan'] ?>}</b><br><b>Jenis:</b> ${jenisText}<br><b>Lokasi:</b> ${lokasiText}<br><b>Koordinat:</b> ${reportLat}, ${reportLng}`).openPopup();
+        } else {
+            mapMasyarakat.setView([-4.18, 121.60], 7);
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(lokasiText)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lon = parseFloat(data[0].lon);
+                        mapMasyarakat.setView([lat, lon], 12);
+                        L.marker([lat, lon]).addTo(mapMasyarakat)
+                            .bindPopup(`<b>Perkiraan Lokasi</b><br>${lokasiText}`).openPopup();
+                    }
+                })
+                .catch(e => console.log('Geocoding fallback:', e));
+        }
+    </script>
+
+    <?php include ROOT_PATH . 'includes/mobile_nav.php'; ?>
 </body>
 
 </html>

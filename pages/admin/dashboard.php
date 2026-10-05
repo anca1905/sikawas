@@ -32,60 +32,60 @@ $flash = getFlash();
         <?php include ROOT_PATH . 'includes/sidebar_admin.php'; ?>
         <div class="main-content">
             <div class="topbar">
-    <div class="topbar-left">
-        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-        <div class="topbar-title">
-            <h1>Dashboard</h1>
-                    <p>Selamat datang, <?= sanitize($_SESSION['nama']) ?> 👋</p>
-        </div>
-    </div>
-    <div class="topbar-actions">
-        <span style="font-size:12px;color:#64748b"><?= date('d M Y') ?></span>
+                <div class="topbar-left">
+                    <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <div class="topbar-title">
+                        <h1>Dashboard</h1>
+                        <p>Selamat datang, <?= sanitize($_SESSION['nama']) ?> 👋</p>
+                    </div>
+                </div>
+                <div class="topbar-actions">
+                    <span style="font-size:12px;color:#64748b"><?= date('d M Y') ?></span>
                     <a href="<?= BASE_URL ?>pages/admin/laporan_baru.php" class="btn btn-primary btn-sm"><i class="fas fa-bell"></i> Laporan Baru <?php if ($baru > 0): ?><span style="background:rgba(255,255,255,.3);border-radius:20px;padding:1px 6px"><?= $baru ?></span><?php endif; ?></a>
-    </div>
-</div>
-<div class="page-body">
+                </div>
+            </div>
+            <div class="page-body">
                 <?php if ($flash): ?>
                     <div class="alert alert-<?= $flash['type'] ?>"><i class="fas fa-info-circle"></i> <?= $flash['message'] ?></div>
                 <?php endif; ?>
 
-                <!-- Stats -->
+                <!-- Stats (Bisa diklik untuk filter laporan) -->
                 <div class="stats-grid">
-                    <div class="stat-card blue">
+                    <a href="<?= BASE_URL ?>pages/admin/kelola_laporan.php" class="stat-card blue" title="Klik untuk lihat semua laporan">
                         <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
                         <div class="stat-text">
                             <div class="stat-value"><?= $total ?></div>
                             <div class="stat-label">Total Laporan</div>
                         </div>
-                    </div>
-                    <div class="stat-card amber">
+                    </a>
+                    <a href="<?= BASE_URL ?>pages/admin/kelola_laporan.php?status=Baru" class="stat-card amber" title="Klik untuk filter laporan baru">
                         <div class="stat-icon"><i class="fas fa-clock"></i></div>
                         <div class="stat-text">
                             <div class="stat-value"><?= $baru ?></div>
                             <div class="stat-label">Laporan Baru</div>
                         </div>
-                    </div>
-                    <div class="stat-card teal">
+                    </a>
+                    <a href="<?= BASE_URL ?>pages/admin/kelola_laporan.php?status=Diverifikasi" class="stat-card teal" title="Klik untuk filter laporan diverifikasi">
                         <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
                         <div class="stat-text">
                             <div class="stat-value"><?= $diverif ?></div>
                             <div class="stat-label">Diverifikasi</div>
                         </div>
-                    </div>
-                    <div class="stat-card purple">
+                    </a>
+                    <a href="<?= BASE_URL ?>pages/admin/kelola_laporan.php?status=Diproses" class="stat-card purple" title="Klik untuk filter laporan diproses">
                         <div class="stat-icon"><i class="fas fa-spinner"></i></div>
                         <div class="stat-text">
                             <div class="stat-value"><?= $proses ?></div>
                             <div class="stat-label">Diproses</div>
                         </div>
-                    </div>
-                    <div class="stat-card green">
+                    </a>
+                    <a href="<?= BASE_URL ?>pages/admin/kelola_laporan.php?status=Selesai" class="stat-card green" title="Klik untuk filter laporan selesai">
                         <div class="stat-icon"><i class="fas fa-check-double"></i></div>
                         <div class="stat-text">
                             <div class="stat-value"><?= $selesai ?></div>
                             <div class="stat-label">Selesai</div>
                         </div>
-                    </div>
+                    </a>
                 </div>
 
                 <!-- Progress Bar -->
@@ -97,15 +97,15 @@ $flash = getFlash();
                         <?php if ($total > 0): ?>
                             <?php
                             $statuses = [
-                                ['label' => 'Baru', 'val' => $baru, 'color' => '#f97316'],
-                                ['label' => 'Diverifikasi', 'val' => $diverif, 'color' => '#3b82f6'],
-                                ['label' => 'Diproses', 'val' => $proses, 'color' => '#eab308'],
-                                ['label' => 'Selesai', 'val' => $selesai, 'color' => '#22c55e'],
+                                ['label' => 'Baru', 'val' => $baru, 'color' => '#f97316', 'link' => 'Baru'],
+                                ['label' => 'Diverifikasi', 'val' => $diverif, 'color' => '#3b82f6', 'link' => 'Diverifikasi'],
+                                ['label' => 'Diproses', 'val' => $proses, 'color' => '#eab308', 'link' => 'Diproses'],
+                                ['label' => 'Selesai', 'val' => $selesai, 'color' => '#22c55e', 'link' => 'Selesai'],
                             ];
                             foreach ($statuses as $s):
                                 $pct = $total > 0 ? round($s['val'] / $total * 100) : 0;
                             ?>
-                                <div style="margin-bottom:14px">
+                                <a href="<?= BASE_URL ?>pages/admin/kelola_laporan.php?status=<?= $s['link'] ?>" style="display:block;text-decoration:none;color:inherit;margin-bottom:14px">
                                     <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:500;margin-bottom:5px">
                                         <span><?= $s['label'] ?></span>
                                         <span style="color:#64748b"><?= $s['val'] ?> (<?= $pct ?>%)</span>
@@ -113,7 +113,7 @@ $flash = getFlash();
                                     <div style="background:#f1f5f9;border-radius:20px;height:8px">
                                         <div style="width:<?= $pct ?>%;background:<?= $s['color'] ?>;height:8px;border-radius:20px;transition:width 1s ease"></div>
                                     </div>
-                                </div>
+                                </a>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <p style="text-align:center;color:#94a3b8;padding:20px 0">Belum ada data laporan.</p>
@@ -150,7 +150,7 @@ $flash = getFlash();
                                             <td><?= sanitize($r['nama_hutan']) ?></td>
                                             <td><?= formatTanggal($r['tanggal_lapor']) ?></td>
                                             <td><?= getStatusBadge($r['status']) ?></td>
-                                            <td><a href="detail_pengaduan.php?id=<?= $r['id_laporan'] ?>" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a></td>
+                                            <td><a href="detail_pengaduan.php?id=<?= $r['id_laporan'] ?>" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</a></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -168,7 +168,7 @@ $flash = getFlash();
         </div>
     </div>
 
-<?php include ROOT_PATH . 'includes/mobile_nav.php'; ?>
+    <?php include ROOT_PATH . 'includes/mobile_nav.php'; ?>
 </body>
 
 </html>
