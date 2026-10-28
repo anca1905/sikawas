@@ -11,10 +11,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $no_hp    = sanitize($_POST['no_hp'] ?? '');
     $alamat   = sanitize($_POST['alamat'] ?? '');
 
-    if (!$nama || !$username || !$password) {
-        $error = 'Nama, username, dan password wajib diisi.';
+    $clean_no_hp = preg_replace('/[^0-9]/', '', $no_hp);
+
+    if (!$nama || !$username || !$password || !$no_hp) {
+        $error = 'Nama, username, password, dan No. Handphone wajib diisi.';
     } elseif (strlen($username) < 4) {
         $error = 'Username minimal 4 karakter.';
+    } elseif (strlen($clean_no_hp) < 12) {
+        $error = 'No. Handphone wajib minimal 12 digit angka. Nomor yang Anda masukkan kurang dari 12 digit (' . strlen($clean_no_hp) . ' digit).';
+    } elseif (strlen($clean_no_hp) > 15) {
+        $error = 'No. Handphone maksimal 15 digit angka.';
     } elseif (strlen($password) < 6) {
         $error = 'Password minimal 6 karakter.';
     } elseif ($password !== $confirm) {
@@ -28,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $hash = password_hash($password, PASSWORD_DEFAULT);
             $db->prepare("INSERT INTO masyarakat (nama, username, password, no_hp, alamat) VALUES (?,?,?,?,?)")
-                ->execute([$nama, $username, $hash, $no_hp, $alamat]);
+                ->execute([$nama, $username, $hash, $clean_no_hp, $alamat]);
             setFlash('success', 'Pendaftaran berhasil! Silakan login dengan akun Anda.');
             redirect(BASE_URL . 'login.php');
         }
@@ -111,10 +117,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">No. Handphone</label>
+                                <label class="form-label">No. Handphone <span style="color:red">*</span></label>
                                 <div class="input-group">
                                     <i class="fas fa-phone input-icon"></i>
-                                    <input type="text" name="no_hp" class="form-control" value="<?= sanitize($_POST['no_hp'] ?? '') ?>" placeholder="08xx-xxxx-xxxx">
+                                    <input type="tel" name="no_hp" id="no_hp" class="form-control" value="<?= sanitize($_POST['no_hp'] ?? '') ?>" placeholder="08xxxxxxxxxx (wajib min. 12 digit)" required minlength="12" maxlength="15" pattern="[0-9]{12,15}" title="Nomor HP wajib angka minimal 12 digit" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                </div>
+                                <div style="font-size:11px;color:#7F8C8D;margin-top:3px">
+                                    <i class="fas fa-info-circle"></i> Wajib minimal 12 digit angka
                                 </div>
                             </div>
                         </div>

@@ -178,6 +178,10 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
             </div>
             <div class="page-body">
                 <?php if ($error): ?><div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> <?= $error ?></div><?php endif; ?>
+                <div class="alert alert-warning" style="background:#fffbeb;border-color:#fde68a;color:#92400e;display:flex;align-items:flex-start;gap:10px;margin-bottom:14px">
+                    <i class="fas fa-exclamation-triangle" style="font-size:16px;margin-top:2px;flex-shrink:0"></i>
+                    <div><strong>Pencegahan Laporan Ganda:</strong> Sebelum mengirim, pastikan kejadian di lokasi Anda belum pernah dilaporkan sebelumnya. Anda dapat memeriksa <a href="../../index.php#laporan-kejadian" target="_blank" style="color:#b45309;font-weight:700;text-decoration:underline">Daftar Kejadian yang Telah Dilaporkan (Foto, Lokasi, Tgl)</a> agar tidak membuat laporan berulang.</div>
+                </div>
                 <div class="alert alert-info"><i class="fas fa-info-circle"></i> Isi formulir di bawah ini dengan lengkap dan akurat. Laporan Anda akan diverifikasi oleh Admin sebelum ditindaklanjuti.</div>
 
                 <form method="POST" enctype="multipart/form-data">

@@ -11,18 +11,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $alamat  = sanitize($_POST['alamat'] ?? '');
     $pass    = $_POST['password'] ?? '';
     $confirm = $_POST['confirm_password'] ?? '';
+    $clean_no_hp = preg_replace('/[^0-9]/', '', $no_hp);
+
     if (!$nama) {
         $error = 'Nama wajib diisi.';
+    } elseif ($no_hp && strlen($clean_no_hp) < 12) {
+        $error = 'No. Handphone wajib minimal 12 digit angka. Nomor yang dimasukkan kurang dari 12 digit (' . strlen($clean_no_hp) . ' digit).';
     } elseif ($pass && strlen($pass) < 6) {
         $error = 'Password minimal 6 karakter.';
     } elseif ($pass && $pass !== $confirm) {
         $error = 'Konfirmasi password tidak cocok.';
     } else {
+        $save_no_hp = $clean_no_hp ?: $no_hp;
         if ($pass) {
             $hash = password_hash($pass, PASSWORD_DEFAULT);
-            $db->prepare("UPDATE masyarakat SET nama=?,no_hp=?,alamat=?,password=? WHERE id_user=?")->execute([$nama, $no_hp, $alamat, $hash, $uid]);
+            $db->prepare("UPDATE masyarakat SET nama=?,no_hp=?,alamat=?,password=? WHERE id_user=?")->execute([$nama, $save_no_hp, $alamat, $hash, $uid]);
         } else {
-            $db->prepare("UPDATE masyarakat SET nama=?,no_hp=?,alamat=? WHERE id_user=?")->execute([$nama, $no_hp, $alamat, $uid]);
+            $db->prepare("UPDATE masyarakat SET nama=?,no_hp=?,alamat=? WHERE id_user=?")->execute([$nama, $save_no_hp, $alamat, $uid]);
         }
         $_SESSION['nama'] = $nama;
         $success = 'Profil berhasil diperbarui.';
@@ -101,8 +106,8 @@ $user = $user->fetch();
                                             <div class="input-group"><i class="fas fa-user input-icon"></i><input type="text" name="nama" class="form-control" value="<?= sanitize($user['nama']) ?>" required></div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="form-label">No. HP</label>
-                                            <div class="input-group"><i class="fas fa-phone input-icon"></i><input type="text" name="no_hp" class="form-control" value="<?= sanitize($user['no_hp'] ?? '') ?>" placeholder="08xx-xxxx-xxxx"></div>
+                                            <label class="form-label">No. HP <small style="color:#64748b">(Min. 12 digit)</small></label>
+                                            <div class="input-group"><i class="fas fa-phone input-icon"></i><input type="tel" name="no_hp" class="form-control" value="<?= sanitize($user['no_hp'] ?? '') ?>" placeholder="08xxxxxxxxxx" minlength="12" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div>
                                         </div>
                                     </div>
                                     <div class="form-group">
