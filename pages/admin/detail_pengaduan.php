@@ -15,6 +15,18 @@ $laporan = $db->prepare("SELECT p.*,m.nama as pelapor,m.no_hp,m.alamat,j.nama_je
 $laporan->execute([$id]);
 $r = $laporan->fetch();
 if (!$r) redirect(BASE_URL . 'pages/admin/kelola_laporan.php');
+
+// Handle Hapus Laporan
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'hapus') {
+    if (hapusLaporan($id)) {
+        setFlash('success', "Laporan #$id berhasil dihapus secara permanen.");
+        redirect(BASE_URL . 'pages/admin/kelola_laporan.php');
+    } else {
+        setFlash('danger', "Gagal menghapus laporan.");
+        redirect(BASE_URL . "pages/admin/detail_pengaduan.php?id=$id");
+    }
+}
+$flash = getFlash();
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -79,13 +91,17 @@ if (!$r) redirect(BASE_URL . 'pages/admin/kelola_laporan.php');
                     </div>
                 </div>
                 <div class="topbar-actions">
-                    <a href="javascript:history.back()" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Kembali</a>
+                    <a href="kelola_laporan.php" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Kembali</a>
                     <?php if ($r['status'] === 'Baru'): ?>
                         <a href="verifikasi_laporan.php" class="btn btn-primary btn-sm"><i class="fas fa-check"></i> Verifikasi</a>
                     <?php endif; ?>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeleteLaporan()"><i class="fas fa-trash-alt"></i> Hapus Laporan</button>
                 </div>
             </div>
             <div class="page-body">
+                <?php if ($flash): ?>
+                    <div class="alert alert-<?= $flash['type'] ?>"><i class="fas fa-info-circle"></i> <?= $flash['message'] ?></div>
+                <?php endif; ?>
                 <div class="detail-grid">
                     <!-- Kiri: Info Laporan & Status Penanganan -->
                     <div>
@@ -266,6 +282,17 @@ if (!$r) redirect(BASE_URL . 'pages/admin/kelola_laporan.php');
                     }
                 })
                 .catch(e => console.log('Geocoding fallback:', e));
+        }
+    </script>
+
+    <form method="POST" id="formHapusLaporan" style="display:none">
+        <input type="hidden" name="action" value="hapus">
+    </form>
+    <script>
+        function confirmDeleteLaporan() {
+            if (confirm('Apakah Anda yakin ingin menghapus laporan #<?= $id ?> ini?\nSemua data laporan dan bukti foto akan dihapus secara permanen.')) {
+                document.getElementById('formHapusLaporan').submit();
+            }
         }
     </script>
 

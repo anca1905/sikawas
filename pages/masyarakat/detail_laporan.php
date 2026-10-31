@@ -10,6 +10,18 @@ $stmt = $db->prepare("SELECT p.*,j.nama_jenis,h.nama_hutan,h.lokasi_hutan,ph.nam
 $stmt->execute([$id, $uid]);
 $r = $stmt->fetch();
 if (!$r) redirect(BASE_URL . 'pages/masyarakat/riwayat_laporan.php');
+
+// Handle Hapus Laporan oleh Pelapor
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'hapus') {
+    if (hapusLaporan($id, $uid)) {
+        setFlash('success', "Laporan #$id berhasil dihapus secara permanen.");
+        redirect(BASE_URL . 'pages/masyarakat/riwayat_laporan.php');
+    } else {
+        setFlash('danger', "Gagal menghapus laporan.");
+        redirect(BASE_URL . "pages/masyarakat/detail_laporan.php?id=$id");
+    }
+}
+$flash = getFlash();
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -63,9 +75,13 @@ if (!$r) redirect(BASE_URL . 'pages/masyarakat/riwayat_laporan.php');
                 </div>
                 <div class="topbar-actions">
                     <a href="riwayat_laporan.php" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Kembali</a>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeleteLaporan()"><i class="fas fa-trash-alt"></i> Hapus Laporan</button>
                 </div>
             </div>
             <div class="page-body">
+                <?php if ($flash): ?>
+                    <div class="alert alert-<?= $flash['type'] ?>"><i class="fas fa-info-circle"></i> <?= $flash['message'] ?></div>
+                <?php endif; ?>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
                     <!-- Kiri: Detail Laporan & Bukti Foto -->
                     <div>
@@ -208,6 +224,17 @@ if (!$r) redirect(BASE_URL . 'pages/masyarakat/riwayat_laporan.php');
                     }
                 })
                 .catch(e => console.log('Geocoding fallback:', e));
+        }
+    </script>
+
+    <form method="POST" id="formHapusLaporan" style="display:none">
+        <input type="hidden" name="action" value="hapus">
+    </form>
+    <script>
+        function confirmDeleteLaporan() {
+            if (confirm('Apakah Anda yakin ingin menghapus laporan #<?= $id ?> ini?\nSemua data laporan dan bukti foto akan dihapus secara permanen.')) {
+                document.getElementById('formHapusLaporan').submit();
+            }
         }
     </script>
 

@@ -3,6 +3,17 @@ require_once '../../config/init.php';
 requireLogin('admin');
 $db = getDB();
 
+// Handle Hapus Laporan
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'hapus') {
+    $idHapus = (int)($_POST['id_laporan'] ?? 0);
+    if ($idHapus && hapusLaporan($idHapus)) {
+        setFlash('success', "Laporan #$idHapus berhasil dihapus.");
+    } else {
+        setFlash('danger', "Gagal menghapus laporan.");
+    }
+    redirect(BASE_URL . 'pages/admin/kelola_laporan.php');
+}
+
 // Filter
 $search  = sanitize($_GET['search'] ?? '');
 $filterS = sanitize($_GET['status'] ?? '');
@@ -32,6 +43,7 @@ $stmt = $db->prepare($sql);
 $stmt->execute($params);
 $laporan = $stmt->fetchAll();
 $jenisList = $db->query("SELECT * FROM jenis_kejahatan ORDER BY nama_jenis")->fetchAll();
+$flash = getFlash();
 
 // Data untuk peta
 $mapPoints = [];
@@ -79,6 +91,9 @@ foreach ($laporan as $r) {
                 </div>
             </div>
             <div class="page-body">
+                <?php if ($flash): ?>
+                    <div class="alert alert-<?= $flash['type'] ?>"><i class="fas fa-info-circle"></i> <?= $flash['message'] ?></div>
+                <?php endif; ?>
                 <form method="GET" class="filter-bar">
                     <div class="form-group">
                         <label class="form-label">Cari</label>
@@ -162,7 +177,12 @@ foreach ($laporan as $r) {
                                             <td><?= formatTanggal($r['tanggal_kejadian']) ?></td>
                                             <td><?= $r['nama_polisi'] ? sanitize($r['nama_polisi']) : '<span style="color:#94a3b8">-</span>' ?></td>
                                             <td><?= getStatusBadge($r['status']) ?></td>
-                                            <td><a href="detail_pengaduan.php?id=<?= $r['id_laporan'] ?>" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</a></td>
+                                            <td>
+                                                <div style="display:flex;gap:6px">
+                                                    <a href="detail_pengaduan.php?id=<?= $r['id_laporan'] ?>" class="btn btn-info btn-sm" title="Lihat Detail"><i class="fas fa-eye"></i> Detail</a>
+                                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeleteLaporan(<?= $r['id_laporan'] ?>, '<?= htmlspecialchars(addslashes($r['pelapor']), ENT_QUOTES) ?>')" title="Hapus Laporan"><i class="fas fa-trash-alt"></i> Hapus</button>
+                                                </div>
+                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -180,8 +200,19 @@ foreach ($laporan as $r) {
         </div>
     </div>
 
+    <form method="POST" id="formHapusLaporan" style="display:none">
+        <input type="hidden" name="action" value="hapus">
+        <input type="hidden" name="id_laporan" id="inputHapusId">
+    </form>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
+        function confirmDeleteLaporan(id, pelapor) {
+            if (confirm('Apakah Anda yakin ingin menghapus laporan #' + id + (pelapor ? ' dari ' + pelapor : '') + '?\nFoto bukti dan data laporan ini akan dihapus secara permanen.')) {
+                document.getElementById('inputHapusId').value = id;
+                document.getElementById('formHapusLaporan').submit();
+            }
+        }
         const mapData = <?= json_encode($mapPoints) ?>;
         let sebaranMapInstance = null;
 

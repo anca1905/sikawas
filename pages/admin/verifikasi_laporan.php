@@ -15,6 +15,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $catatan = sanitize($_POST['catatan_admin'] ?? '');
         $db->prepare("UPDATE pengaduan SET status='Ditolak',id_admin=?,catatan_admin=? WHERE id_laporan=?")->execute([$_SESSION['user_id'], $catatan, $id]);
         setFlash('danger', 'Laporan telah ditolak.');
+    } elseif ($_POST['action'] === 'hapus') {
+        if (hapusLaporan($id)) {
+            setFlash('success', "Laporan #$id berhasil dihapus secara permanen.");
+        } else {
+            setFlash('danger', 'Gagal menghapus laporan.');
+        }
     }
     redirect(BASE_URL . 'pages/admin/verifikasi_laporan.php');
 }
@@ -189,9 +195,12 @@ $flash = getFlash();
                                                 <?php else: ?><span style="color:#94a3b8;font-size:12px">Tidak ada</span><?php endif; ?>
                                             </td>
                                             <td>
-                                                <a href="detail_pengaduan.php?id=<?= $r['id_laporan'] ?>" class="btn btn-info btn-sm" title="Detail"><i class="fas fa-eye"></i></a>
-                                                <button onclick="openVerif(<?= $r['id_laporan'] ?>,<?= htmlspecialchars(json_encode(sanitize($r['pelapor']))) ?>)" class="btn btn-primary btn-sm" title="Verifikasi"><i class="fas fa-check"></i> Verifikasi</button>
-                                                <button onclick="openTolak(<?= $r['id_laporan'] ?>,<?= htmlspecialchars(json_encode(sanitize($r['pelapor']))) ?>)" class="btn btn-danger btn-sm" title="Tolak"><i class="fas fa-times"></i></button>
+                                                <div style="display:flex;gap:4px;flex-wrap:wrap">
+                                                    <a href="detail_pengaduan.php?id=<?= $r['id_laporan'] ?>" class="btn btn-info btn-sm" title="Detail"><i class="fas fa-eye"></i></a>
+                                                    <button type="button" onclick="openVerif(<?= $r['id_laporan'] ?>,<?= htmlspecialchars(json_encode(sanitize($r['pelapor']))) ?>)" class="btn btn-primary btn-sm" title="Verifikasi"><i class="fas fa-check"></i> Verifikasi</button>
+                                                    <button type="button" onclick="openTolak(<?= $r['id_laporan'] ?>,<?= htmlspecialchars(json_encode(sanitize($r['pelapor']))) ?>)" class="btn btn-accent btn-sm" title="Tolak" style="background:#f59e0b;color:#fff"><i class="fas fa-times"></i></button>
+                                                    <button type="button" onclick="confirmDeleteLaporan(<?= $r['id_laporan'] ?>)" class="btn btn-danger btn-sm" title="Hapus Laporan"><i class="fas fa-trash-alt"></i></button>
+                                                </div>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -276,7 +285,18 @@ $flash = getFlash();
             </div>
         </div>
 
+        <form method="POST" id="formHapusLaporan" style="display:none">
+            <input type="hidden" name="action" value="hapus">
+            <input type="hidden" name="id_laporan" id="inputHapusId">
+        </form>
         <script>
+            function confirmDeleteLaporan(id) {
+                if (confirm('Apakah Anda yakin ingin menghapus laporan #' + id + ' ini?\nSemua data laporan dan bukti foto akan dihapus secara permanen.')) {
+                    document.getElementById('inputHapusId').value = id;
+                    document.getElementById('formHapusLaporan').submit();
+                }
+            }
+
             function openVerif(id, name) {
                 document.getElementById('vId').value = id;
                 document.getElementById('vName').textContent = name;

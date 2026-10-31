@@ -4,6 +4,17 @@ requireLogin('masyarakat');
 $db  = getDB();
 $uid = $_SESSION['user_id'];
 
+// Handle Hapus Laporan oleh Pelapor
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'hapus') {
+    $idHapus = (int)($_POST['id_laporan'] ?? 0);
+    if ($idHapus && hapusLaporan($idHapus, $uid)) {
+        setFlash('success', "Laporan #$idHapus berhasil dihapus.");
+    } else {
+        setFlash('danger', "Gagal menghapus laporan atau Anda tidak memiliki hak akses.");
+    }
+    redirect(BASE_URL . 'pages/masyarakat/riwayat_laporan.php');
+}
+
 $filterS = sanitize($_GET['status'] ?? '');
 $sql = "SELECT p.*,j.nama_jenis,h.nama_hutan FROM pengaduan p JOIN jenis_kejahatan j ON p.id_jenis=j.id_jenis JOIN jenis_kawasan_hutan h ON p.id_hutan=h.id_hutan WHERE p.id_user=?";
 $params = [$uid];
@@ -90,7 +101,12 @@ $flash = getFlash();
                                             <td><?= formatTanggal($r['tanggal_kejadian']) ?></td>
                                             <td><?= formatTanggal($r['tanggal_lapor']) ?></td>
                                             <td><?= getStatusBadge($r['status']) ?></td>
-                                            <td><a href="detail_laporan.php?id=<?= $r['id_laporan'] ?>" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</a></td>
+                                            <td>
+                                                <div style="display:flex;gap:6px">
+                                                    <a href="detail_laporan.php?id=<?= $r['id_laporan'] ?>" class="btn btn-info btn-sm" title="Lihat Detail"><i class="fas fa-eye"></i> Detail</a>
+                                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeleteLaporan(<?= $r['id_laporan'] ?>)" title="Hapus Laporan"><i class="fas fa-trash-alt"></i> Hapus</button>
+                                                </div>
+                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -108,6 +124,19 @@ $flash = getFlash();
             </div>
         </div>
     </div>
+
+    <form method="POST" id="formHapusLaporan" style="display:none">
+        <input type="hidden" name="action" value="hapus">
+        <input type="hidden" name="id_laporan" id="inputHapusId">
+    </form>
+    <script>
+        function confirmDeleteLaporan(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus laporan #' + id + ' ini?\nSemua data laporan dan bukti foto akan dihapus secara permanen.')) {
+                document.getElementById('inputHapusId').value = id;
+                document.getElementById('formHapusLaporan').submit();
+            }
+        }
+    </script>
 
     <?php include ROOT_PATH . 'includes/mobile_nav.php'; ?>
 </body>

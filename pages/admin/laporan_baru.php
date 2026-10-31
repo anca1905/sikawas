@@ -3,6 +3,19 @@ require_once '../../config/init.php';
 requireLogin('admin');
 $db = getDB();
 
+// Handle Hapus Laporan
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'hapus') {
+    $idHapus = (int)($_POST['id_laporan'] ?? 0);
+    if ($idHapus && hapusLaporan($idHapus)) {
+        setFlash('success', "Laporan #$idHapus berhasil dihapus.");
+    } else {
+        setFlash('danger', "Gagal menghapus laporan.");
+    }
+    redirect(BASE_URL . 'pages/admin/laporan_baru.php');
+}
+
+$flash = getFlash();
+
 $laporan = $db->query("SELECT p.*,m.nama as pelapor,j.nama_jenis,h.nama_hutan FROM pengaduan p
     JOIN masyarakat m ON p.id_user=m.id_user
     JOIN jenis_kejahatan j ON p.id_jenis=j.id_jenis
@@ -38,6 +51,9 @@ $laporan = $db->query("SELECT p.*,m.nama as pelapor,j.nama_jenis,h.nama_hutan FR
     </div>
 </div>
 <div class="page-body">
+                <?php if ($flash): ?>
+                    <div class="alert alert-<?= $flash['type'] ?>"><i class="fas fa-info-circle"></i> <?= $flash['message'] ?></div>
+                <?php endif; ?>
                 <div class="card">
                     <div class="card-header">
                         <h3><i class="fas fa-bell" style="color:#ef4444;margin-right:8px"></i>Daftar Laporan Baru
@@ -70,7 +86,10 @@ $laporan = $db->query("SELECT p.*,m.nama as pelapor,j.nama_jenis,h.nama_hutan FR
                                             <td><?= sanitize($r['nama_hutan']) ?></td>
                                             <td><?= sanitize($r['lokasi']) ?></td>
                                             <td>
-                                                <a href="detail_pengaduan.php?id=<?= $r['id_laporan'] ?>" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Kelola</a>
+                                                <div style="display:flex;gap:6px">
+                                                    <a href="detail_pengaduan.php?id=<?= $r['id_laporan'] ?>" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Kelola</a>
+                                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeleteLaporan(<?= $r['id_laporan'] ?>)"><i class="fas fa-trash-alt"></i> Hapus</button>
+                                                </div>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -88,6 +107,19 @@ $laporan = $db->query("SELECT p.*,m.nama as pelapor,j.nama_jenis,h.nama_hutan FR
             </div>
         </div>
     </div>
+
+    <form method="POST" id="formHapusLaporan" style="display:none">
+        <input type="hidden" name="action" value="hapus">
+        <input type="hidden" name="id_laporan" id="inputHapusId">
+    </form>
+    <script>
+        function confirmDeleteLaporan(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus laporan #' + id + ' ini?\nSemua data laporan dan bukti foto akan dihapus secara permanen.')) {
+                document.getElementById('inputHapusId').value = id;
+                document.getElementById('formHapusLaporan').submit();
+            }
+        }
+    </script>
 
 <?php include ROOT_PATH . 'includes/mobile_nav.php'; ?>
 </body>

@@ -194,6 +194,46 @@ function getAuthUserFoto()
     return null;
 }
 
+function hapusLaporan($id_laporan, $id_user = null)
+{
+    $db = getDB();
+    $id = (int)$id_laporan;
+    if (!$id) return false;
+
+    // Ambil bukti_foto sebelum laporan dihapus
+    if ($id_user !== null) {
+        $stmt = $db->prepare("SELECT bukti_foto FROM pengaduan WHERE id_laporan = ? AND id_user = ?");
+        $stmt->execute([$id, (int)$id_user]);
+    } else {
+        $stmt = $db->prepare("SELECT bukti_foto FROM pengaduan WHERE id_laporan = ?");
+        $stmt->execute([$id]);
+    }
+
+    $row = $stmt->fetch();
+    if (!$row) {
+        return false;
+    }
+
+    // Hapus file bukti foto dari server jika ada
+    if (!empty($row['bukti_foto'])) {
+        $fullPath = ROOT_PATH . ltrim($row['bukti_foto'], '/\\');
+        $realUploadsDir = realpath(ROOT_PATH . 'uploads');
+        $realFilePath = realpath($fullPath);
+        if ($realFilePath && $realUploadsDir && strpos($realFilePath, $realUploadsDir) === 0 && file_exists($realFilePath)) {
+            @unlink($realFilePath);
+        }
+    }
+
+    // Hapus data dari tabel pengaduan
+    if ($id_user !== null) {
+        $del = $db->prepare("DELETE FROM pengaduan WHERE id_laporan = ? AND id_user = ?");
+        return $del->execute([$id, (int)$id_user]);
+    } else {
+        $del = $db->prepare("DELETE FROM pengaduan WHERE id_laporan = ?");
+        return $del->execute([$id]);
+    }
+}
+
 function setFlash($type, $message)
 {
     $_SESSION['flash'] = ['type' => $type, 'message' => $message];
