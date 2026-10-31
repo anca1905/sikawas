@@ -31,11 +31,11 @@ $page = basename($_SERVER['PHP_SELF']);
             <a href="<?= BASE_URL ?>pages/admin/verifikasi_laporan.php" class="<?= $page === 'verifikasi_laporan.php' ? 'active' : '' ?>">
                 <i class="fas fa-clipboard-check"></i><span>Verifikasi</span>
             </a>
-            <a href="<?= BASE_URL ?>pages/admin/kelola_laporan.php" class="<?= $page === 'kelola_laporan.php' ? 'active' : '' ?>">
-                <i class="fas fa-folder-open"></i><span>Laporan</span>
+            <a href="<?= BASE_URL ?>pages/admin/profil.php" class="<?= $page === 'profil.php' ? 'active' : '' ?>">
+                <i class="fas fa-user-cog"></i><span>Profil</span>
             </a>
             <a href="javascript:void(0)" onclick="toggleSidebar()">
-                <i class="fas fa-ellipsis-h"></i><span>Lainnya</span>
+                <i class="fas fa-ellipsis-h"></i><span>Menu</span>
             </a>
 
         <?php elseif ($role === 'masyarakat'): ?>
@@ -62,6 +62,9 @@ $page = basename($_SERVER['PHP_SELF']);
             <a href="<?= BASE_URL ?>pages/polisi/daftar_pengaduan.php" class="<?= $page === 'daftar_pengaduan.php' || $page === 'detail_pengaduan.php' ? 'active' : '' ?>">
                 <i class="fas fa-list-ul"></i><span>Pengaduan</span>
             </a>
+            <a href="<?= BASE_URL ?>pages/polisi/profil.php" class="<?= $page === 'profil.php' ? 'active' : '' ?>">
+                <i class="fas fa-user-shield"></i><span>Profil</span>
+            </a>
             <a href="<?= BASE_URL ?>logout.php">
                 <i class="fas fa-sign-out-alt"></i><span>Keluar</span>
             </a>
@@ -72,6 +75,9 @@ $page = basename($_SERVER['PHP_SELF']);
             </a>
             <a href="<?= BASE_URL ?>pages/pimpinan/rekap_laporan.php" class="<?= $page === 'rekap_laporan.php' ? 'active' : '' ?>">
                 <i class="fas fa-chart-bar"></i><span>Rekap</span>
+            </a>
+            <a href="<?= BASE_URL ?>pages/pimpinan/profil.php" class="<?= $page === 'profil.php' ? 'active' : '' ?>">
+                <i class="fas fa-user-tie"></i><span>Profil</span>
             </a>
             <a href="<?= BASE_URL ?>logout.php">
                 <i class="fas fa-sign-out-alt"></i><span>Keluar</span>

@@ -2,6 +2,7 @@
 $currentPage = basename($_SERVER['PHP_SELF']);
 $uid  = $_SESSION['user_id'];
 $nama = $_SESSION['nama'] ?? 'Admin';
+$fotoUser = getAuthUserFoto();
 $db   = getDB();
 $newCount = $db->query("SELECT COUNT(*) FROM pengaduan WHERE status='Baru'")->fetchColumn();
 ?>
@@ -16,13 +17,19 @@ $newCount = $db->query("SELECT COUNT(*) FROM pengaduan WHERE status='Baru'")->fe
         </div>
     </div>
 
-    <div class="sidebar-user">
-        <div class="user-avatar"><?= strtoupper(substr($nama, 0, 1)) ?></div>
+    <a href="<?= BASE_URL ?>pages/admin/profil.php" class="sidebar-user" style="text-decoration:none;cursor:pointer" title="Kelola Profil Saya">
+        <div class="user-avatar">
+            <?php if (!empty($fotoUser)): ?>
+                <img src="<?= BASE_URL . sanitize($fotoUser) ?>" alt="Foto Profil">
+            <?php else: ?>
+                <?= strtoupper(substr($nama, 0, 1)) ?>
+            <?php endif; ?>
+        </div>
         <div class="user-info">
             <div class="user-name"><?= sanitize($nama) ?></div>
             <div class="user-role"><i class="fas fa-user-shield"></i> Administrator</div>
         </div>
-    </div>
+    </a>
 
     <nav class="sidebar-nav">
         <div class="nav-section-title">Menu Utama</div>
@@ -54,7 +61,10 @@ $newCount = $db->query("SELECT COUNT(*) FROM pengaduan WHERE status='Baru'")->fe
             <i class="fas fa-hard-hat"></i> Akun Polisi Hutan
         </a>
 
-        <div class="nav-section-title">Sistem</div>
+        <div class="nav-section-title">Akun & Sistem</div>
+        <a href="<?= BASE_URL ?>pages/admin/profil.php" class="nav-item <?= $currentPage === 'profil.php' ? 'active' : '' ?>">
+            <i class="fas fa-user-cog"></i> Profil Admin
+        </a>
         <a href="<?= BASE_URL ?>logout.php" class="nav-item logout">
             <i class="fas fa-sign-out-alt"></i> Keluar Sistem
         </a>

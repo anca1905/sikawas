@@ -1,6 +1,7 @@
 <?php
 $currentPage = basename($_SERVER['PHP_SELF']);
 $nama = $_SESSION['nama'] ?? 'Petugas';
+$fotoUser = getAuthUserFoto();
 ?>
 <div class="sidebar">
     <div class="sidebar-brand">
@@ -13,13 +14,19 @@ $nama = $_SESSION['nama'] ?? 'Petugas';
         </div>
     </div>
 
-    <div class="sidebar-user">
-        <div class="user-avatar" style="background:#1A5276"><?= strtoupper(substr($nama, 0, 1)) ?></div>
+    <a href="<?= BASE_URL ?>pages/polisi/profil.php" class="sidebar-user" style="text-decoration:none;cursor:pointer" title="Kelola Profil Saya">
+        <div class="user-avatar" style="background:#1A5276">
+            <?php if (!empty($fotoUser)): ?>
+                <img src="<?= BASE_URL . sanitize($fotoUser) ?>" alt="Foto Profil">
+            <?php else: ?>
+                <?= strtoupper(substr($nama, 0, 1)) ?>
+            <?php endif; ?>
+        </div>
         <div class="user-info">
             <div class="user-name"><?= sanitize($nama) ?></div>
             <div class="user-role"><i class="fas fa-hard-hat"></i> Polisi Hutan</div>
         </div>
-    </div>
+    </a>
 
     <nav class="sidebar-nav">
         <div class="nav-section-title">Menu</div>
@@ -28,6 +35,9 @@ $nama = $_SESSION['nama'] ?? 'Petugas';
         </a>
         <a href="<?= BASE_URL ?>pages/polisi/daftar_pengaduan.php" class="nav-item <?= $currentPage === 'daftar_pengaduan.php' ? 'active' : '' ?>">
             <i class="fas fa-list-ul"></i> Daftar Pengaduan
+        </a>
+        <a href="<?= BASE_URL ?>pages/polisi/profil.php" class="nav-item <?= $currentPage === 'profil.php' ? 'active' : '' ?>">
+            <i class="fas fa-user-shield"></i> Profil Saya
         </a>
 
         <div class="nav-section-title">Sistem</div>

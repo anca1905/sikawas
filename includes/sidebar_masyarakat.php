@@ -1,6 +1,7 @@
 <?php
 $currentPage = basename($_SERVER['PHP_SELF']);
 $nama = $_SESSION['nama'] ?? 'Pengguna';
+$fotoUser = getAuthUserFoto();
 ?>
 <div class="sidebar">
     <div class="sidebar-brand">
@@ -13,13 +14,19 @@ $nama = $_SESSION['nama'] ?? 'Pengguna';
         </div>
     </div>
 
-    <div class="sidebar-user">
-        <div class="user-avatar"><?= strtoupper(substr($nama, 0, 1)) ?></div>
+    <a href="<?= BASE_URL ?>pages/masyarakat/profil.php" class="sidebar-user" style="text-decoration:none;cursor:pointer" title="Kelola Profil Saya">
+        <div class="user-avatar">
+            <?php if (!empty($fotoUser)): ?>
+                <img src="<?= BASE_URL . sanitize($fotoUser) ?>" alt="Foto Profil">
+            <?php else: ?>
+                <?= strtoupper(substr($nama, 0, 1)) ?>
+            <?php endif; ?>
+        </div>
         <div class="user-info">
             <div class="user-name"><?= sanitize($nama) ?></div>
             <div class="user-role"><i class="fas fa-users"></i> Masyarakat</div>
         </div>
-    </div>
+    </a>
 
     <nav class="sidebar-nav">
         <div class="nav-section-title">Menu</div>

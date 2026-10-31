@@ -37,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['role']     = $role;
             $_SESSION['username'] = $user['username'];
             $_SESSION['nama']     = $user['nama'];
+            $_SESSION['foto']     = $user['foto'] ?? null;
             $dest = ['masyarakat' => 'pages/masyarakat/dashboard.php', 'admin' => 'pages/admin/dashboard.php', 'polisi' => 'pages/polisi/dashboard.php', 'pimpinan' => 'pages/pimpinan/dashboard.php'];
             redirect(BASE_URL . $dest[$role]);
         } else {

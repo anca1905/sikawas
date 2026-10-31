@@ -33,7 +33,7 @@ function redirect($url)
 
 function sanitize($data)
 {
-    return htmlspecialchars(strip_tags(trim($data)));
+    return htmlspecialchars(strip_tags(trim($data ?? '')));
 }
 
 function formatTanggal($date)
@@ -85,6 +85,111 @@ function uploadFoto($file, $subfolder = 'uploads')
     if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
     if (move_uploaded_file($file['tmp_name'], $uploadDir . $filename)) {
         return $subfolder . '/' . $filename;
+    }
+    return null;
+}
+
+function uploadFotoProfil($file, $role = 'user', $userId = 0, $oldFoto = null)
+{
+    if (!$file || !isset($file['error']) || $file['error'] === UPLOAD_ERR_NO_FILE) {
+        return ['success' => false, 'error' => 'Tidak ada file yang dipilih untuk diunggah.'];
+    }
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        return ['success' => false, 'error' => 'Gagal mengunggah file foto (Kode: ' . $file['error'] . ').'];
+    }
+    if ($file['size'] > 5 * 1024 * 1024) { // 5MB limit
+        return ['success' => false, 'error' => 'Ukuran file foto maksimal 5 MB.'];
+    }
+
+    $ext = strtolower(pathinfo($file['name'] ?? '', PATHINFO_EXTENSION));
+    $allowedExts = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+    if (!in_array($ext, $allowedExts)) {
+        return ['success' => false, 'error' => 'Format file tidak didukung. Harap unggah foto berekstensi JPG, JPEG, PNG, WEBP, atau GIF.'];
+    }
+
+    // Validasi apakah benar file gambar
+    $checkImg = @getimagesize($file['tmp_name']);
+    if ($checkImg === false) {
+        return ['success' => false, 'error' => 'File yang diunggah bukan file gambar yang valid.'];
+    }
+
+    $uploadDir = ROOT_PATH . 'uploads/profil/';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+
+    $cleanRole = preg_replace('/[^a-z0-9_-]/i', '', $role);
+    $filename = 'profil_' . $cleanRole . '_' . (int)$userId . '_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+    $targetPath = $uploadDir . $filename;
+
+    $moved = false;
+    if (is_uploaded_file($file['tmp_name'])) {
+        $moved = move_uploaded_file($file['tmp_name'], $targetPath);
+    } elseif (php_sapi_name() === 'cli' && file_exists($file['tmp_name'])) {
+        $moved = copy($file['tmp_name'], $targetPath) && @unlink($file['tmp_name']);
+    }
+
+    if ($moved) {
+        // Hapus file foto lama jika ada
+        if (!empty($oldFoto)) {
+            hapusFotoProfil($oldFoto);
+        }
+        $relativePath = 'uploads/profil/' . $filename;
+        $_SESSION['foto'] = $relativePath;
+        return ['success' => true, 'path' => $relativePath];
+    }
+
+    return ['success' => false, 'error' => 'Gagal menyimpan file foto profil ke server.'];
+}
+
+function hapusFotoProfil($fotoPath)
+{
+    if (!$fotoPath) return false;
+    $fullPath = ROOT_PATH . ltrim($fotoPath, '/\\');
+    $realTargetDir = realpath(ROOT_PATH . 'uploads/profil');
+    $realFilePath = realpath($fullPath);
+    if ($realFilePath && $realTargetDir && strpos($realFilePath, $realTargetDir) === 0 && file_exists($realFilePath)) {
+        @unlink($realFilePath);
+        return true;
+    }
+    return false;
+}
+
+function getAuthUserFoto()
+{
+    if (isset($_SESSION['foto']) && $_SESSION['foto'] !== null) {
+        if (file_exists(ROOT_PATH . $_SESSION['foto'])) {
+            return $_SESSION['foto'];
+        } else {
+            $_SESSION['foto'] = null;
+        }
+    }
+    if (isLoggedIn()) {
+        $db = getDB();
+        $role = $_SESSION['role'];
+        $uid = (int)$_SESSION['user_id'];
+        $tableMap = [
+            'masyarakat' => ['masyarakat', 'id_user'],
+            'admin'      => ['admin', 'id_admin'],
+            'polisi'     => ['polisi_hutan', 'id_polisi'],
+            'pimpinan'   => ['pimpinan', 'id_pimpinan'],
+        ];
+        if (isset($tableMap[$role])) {
+            [$table, $idCol] = $tableMap[$role];
+            try {
+                $stmt = $db->prepare("SELECT foto FROM $table WHERE $idCol = ?");
+                $stmt->execute([$uid]);
+                $foto = $stmt->fetchColumn();
+                if ($foto && file_exists(ROOT_PATH . $foto)) {
+                    $_SESSION['foto'] = $foto;
+                    return $foto;
+                } else {
+                    $_SESSION['foto'] = null;
+                }
+            } catch (Exception $e) {
+                $_SESSION['foto'] = null;
+            }
+        }
     }
     return null;
 }
