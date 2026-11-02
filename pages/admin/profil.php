@@ -100,7 +100,7 @@ $countVerif = (int)$stmtVerif->fetchColumn();
     <title>Profil Administrator — SIKAWAS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css?v=<?= filemtime(ROOT_PATH . 'assets/css/style.css') ?>">
     <style>
         .profil-grid {
             display: grid;
@@ -136,19 +136,19 @@ $countVerif = (int)$stmtVerif->fetchColumn();
                     <!-- Avatar Card -->
                     <div>
                         <div class="card" style="text-align:center;padding:28px 20px">
-                            <div class="profile-photo-wrapper">
+                            <div class="profile-photo-wrapper" style="position:relative;width:100px;height:100px;max-width:100px;max-height:100px;margin:0 auto 16px;border-radius:50%">
                                 <?php if (!empty($user['foto']) && file_exists(ROOT_PATH . $user['foto'])): ?>
-                                    <img id="cardAvatarImg" src="<?= BASE_URL . sanitize($user['foto']) ?>" class="profile-photo-img" alt="Foto Profil">
-                                    <div id="cardAvatarPlaceholder" class="profile-photo-initial" style="background:linear-gradient(135deg,#1a7a3f,#2ea055);display:none">
+                                    <img id="cardAvatarImg" src="<?= BASE_URL . sanitize($user['foto']) ?>" class="profile-photo-img" alt="Foto Profil" style="width:100px;height:100px;max-width:100px;max-height:100px;border-radius:50%;object-fit:cover;display:block;border:3px solid #fff;box-shadow:0 8px 24px rgba(0,0,0,0.12)">
+                                    <div id="cardAvatarPlaceholder" class="profile-photo-initial" style="width:100px;height:100px;max-width:100px;max-height:100px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:38px;font-weight:800;color:#fff;border:3px solid #fff;box-shadow:0 8px 24px rgba(0,0,0,0.12);background:linear-gradient(135deg,#1a7a3f,#2ea055)">
                                         <?= strtoupper(substr($user['nama'], 0, 1)) ?>
                                     </div>
                                 <?php else: ?>
-                                    <img id="cardAvatarImg" src="" class="profile-photo-img" alt="Foto Profil" style="display:none">
-                                    <div id="cardAvatarPlaceholder" class="profile-photo-initial" style="background:linear-gradient(135deg,#1a7a3f,#2ea055)">
+                                    <img id="cardAvatarImg" src="" class="profile-photo-img" alt="Foto Profil" style="width:100px;height:100px;max-width:100px;max-height:100px;border-radius:50%;object-fit:cover;display:none;border:3px solid #fff;box-shadow:0 8px 24px rgba(0,0,0,0.12)">
+                                    <div id="cardAvatarPlaceholder" class="profile-photo-initial" style="width:100px;height:100px;max-width:100px;max-height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:800;color:#fff;border:3px solid #fff;box-shadow:0 8px 24px rgba(0,0,0,0.12);background:linear-gradient(135deg,#1a7a3f,#2ea055)">
                                         <?= strtoupper(substr($user['nama'], 0, 1)) ?>
                                     </div>
                                 <?php endif; ?>
-                                <button type="button" class="profile-photo-badge" onclick="document.getElementById('fotoInput').click()" title="Unggah / Ganti Foto">
+                                <button type="button" class="profile-photo-badge" onclick="document.getElementById('fotoInput').click()" title="Unggah / Ganti Foto" style="position:absolute;bottom:0px;right:0px;width:32px;height:32px;border-radius:50%;background:#1a7a3f;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;border:2px solid #fff;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.25)">
                                     <i class="fas fa-camera"></i>
                                 </button>
                             </div>
@@ -196,17 +196,17 @@ $countVerif = (int)$stmtVerif->fetchColumn();
                                         <label class="form-label" style="font-weight:700;margin-bottom:8px">Foto Profil</label>
                                         <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
                                             <div style="position:relative">
-                                                <div id="previewContainer" style="width:72px;height:72px;border-radius:50%;overflow:hidden;border:2px solid #cbd5e1;background:#fff;display:flex;align-items:center;justify-content:center">
+                                                <div id="previewContainer" style="width:72px;height:72px;max-width:72px;max-height:72px;border-radius:50%;overflow:hidden;border:2px solid #cbd5e1;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0">
                                                     <?php if (!empty($user['foto']) && file_exists(ROOT_PATH . $user['foto'])): ?>
-                                                        <img id="avatarPreview" src="<?= BASE_URL . sanitize($user['foto']) ?>" style="width:100%;height:100%;object-fit:cover">
-                                                        <div id="avatarPlaceholder" style="width:100%;height:100%;display:none;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a7a3f,#2ea055);color:#fff;font-size:24px;font-weight:700">
+                                                        <img id="avatarPreview" src="<?= BASE_URL . sanitize($user['foto']) ?>" style="width:72px;height:72px;max-width:72px;max-height:72px;border-radius:50%;object-fit:cover;display:block">
+                                                        <div id="avatarPlaceholder" style="width:72px;height:72px;max-width:72px;max-height:72px;border-radius:50%;display:none;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a7a3f,#2ea055);color:#fff;font-size:24px;font-weight:700">
                                                             <?= strtoupper(substr($user['nama'], 0, 1)) ?>
                                                         </div>
                                                     <?php else: ?>
-                                                        <div id="avatarPlaceholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a7a3f,#2ea055);color:#fff;font-size:24px;font-weight:700">
+                                                        <div id="avatarPlaceholder" style="width:72px;height:72px;max-width:72px;max-height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a7a3f,#2ea055);color:#fff;font-size:24px;font-weight:700">
                                                             <?= strtoupper(substr($user['nama'], 0, 1)) ?>
                                                         </div>
-                                                        <img id="avatarPreview" src="" style="width:100%;height:100%;object-fit:cover;display:none">
+                                                        <img id="avatarPreview" src="" style="width:72px;height:72px;max-width:72px;max-height:72px;border-radius:50%;object-fit:cover;display:none">
                                                     <?php endif; ?>
                                                 </div>
                                             </div>
@@ -305,6 +305,12 @@ $countVerif = (int)$stmtVerif->fetchColumn();
                     if (preview) {
                         preview.src = e.target.result;
                         preview.style.display = 'block';
+                        preview.style.width = '72px';
+                        preview.style.height = '72px';
+                        preview.style.maxWidth = '72px';
+                        preview.style.maxHeight = '72px';
+                        preview.style.borderRadius = '50%';
+                        preview.style.objectFit = 'cover';
                     }
                     if (placeholder) {
                         placeholder.style.display = 'none';
@@ -312,6 +318,12 @@ $countVerif = (int)$stmtVerif->fetchColumn();
                     if (cardImg) {
                         cardImg.src = e.target.result;
                         cardImg.style.display = 'block';
+                        cardImg.style.width = '100px';
+                        cardImg.style.height = '100px';
+                        cardImg.style.maxWidth = '100px';
+                        cardImg.style.maxHeight = '100px';
+                        cardImg.style.borderRadius = '50%';
+                        cardImg.style.objectFit = 'cover';
                     }
                     if (cardPlaceholder) {
                         cardPlaceholder.style.display = 'none';

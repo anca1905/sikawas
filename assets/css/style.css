@@ -167,6 +167,8 @@ body {
     position: relative;
     width: 100px;
     height: 100px;
+    max-width: 100px;
+    max-height: 100px;
     margin: 0 auto 16px;
     border-radius: 50%;
 }
@@ -174,6 +176,8 @@ body {
 .profile-photo-img {
     width: 100px;
     height: 100px;
+    max-width: 100px;
+    max-height: 100px;
     border-radius: 50%;
     object-fit: cover;
     display: block;
@@ -184,6 +188,8 @@ body {
 .profile-photo-initial {
     width: 100px;
     height: 100px;
+    max-width: 100px;
+    max-height: 100px;
     border-radius: 50%;
     display: flex;
     align-items: center;

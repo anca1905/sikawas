@@ -115,8 +115,9 @@ function uploadFotoProfil($file, $role = 'user', $userId = 0, $oldFoto = null)
 
     $uploadDir = ROOT_PATH . 'uploads/profil/';
     if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0755, true);
+        @mkdir($uploadDir, 0777, true);
     }
+    @chmod($uploadDir, 0777);
 
     $cleanRole = preg_replace('/[^a-z0-9_-]/i', '', $role);
     $filename = 'profil_' . $cleanRole . '_' . (int)$userId . '_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
@@ -124,12 +125,13 @@ function uploadFotoProfil($file, $role = 'user', $userId = 0, $oldFoto = null)
 
     $moved = false;
     if (is_uploaded_file($file['tmp_name'])) {
-        $moved = move_uploaded_file($file['tmp_name'], $targetPath);
+        $moved = @move_uploaded_file($file['tmp_name'], $targetPath);
     } elseif (php_sapi_name() === 'cli' && file_exists($file['tmp_name'])) {
-        $moved = copy($file['tmp_name'], $targetPath) && @unlink($file['tmp_name']);
+        $moved = @copy($file['tmp_name'], $targetPath) && @unlink($file['tmp_name']);
     }
 
     if ($moved) {
+        @chmod($targetPath, 0666);
         // Hapus file foto lama jika ada
         if (!empty($oldFoto)) {
             hapusFotoProfil($oldFoto);
@@ -139,7 +141,7 @@ function uploadFotoProfil($file, $role = 'user', $userId = 0, $oldFoto = null)
         return ['success' => true, 'path' => $relativePath];
     }
 
-    return ['success' => false, 'error' => 'Gagal menyimpan file foto profil ke server.'];
+    return ['success' => false, 'error' => 'Gagal menyimpan file foto profil ke server. Pastikan folder uploads/profil memiliki izin tulis (write permission).'];
 }
 
 function hapusFotoProfil($fotoPath)
