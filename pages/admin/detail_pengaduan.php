@@ -173,12 +173,12 @@ $flash = getFlash();
                         </div>
                     </div>
 
-                    <!-- Kanan: Peta Lokasi Kejadian, Data Pelapor & Foto -->
+                    <!-- Kanan: Peta Lokasi, Data Pelapor & Foto -->
                     <div>
-                        <!-- Peta Lokasi Kejadian (Maps) -->
+                        <!-- Peta Lokasi (Maps) -->
                         <div class="card" style="margin-bottom:20px">
                             <div class="card-header">
-                                <h3><i class="fas fa-map-marked-alt" style="color:#1a7a3f;margin-right:8px"></i>Peta Lokasi Kejadian</h3>
+                                <h3><i class="fas fa-map-marked-alt" style="color:#1a7a3f;margin-right:8px"></i>Peta Lokasi</h3>
                                 <?php if (!empty($r['latitude']) && !empty($r['longitude'])): ?>
                                     <a href="https://www.google.com/maps?q=<?= $r['latitude'] ?>,<?= $r['longitude'] ?>" target="_blank" class="btn btn-secondary btn-sm" style="font-size:11px">
                                         <i class="fas fa-external-link-alt"></i> Buka Google Maps

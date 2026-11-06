@@ -12,29 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $longitude = sanitize($_POST['longitude'] ?? '');
     $deskripsi = sanitize($_POST['deskripsi'] ?? '');
     
-    $id_jenis_raw = $_POST['id_jenis'] ?? '';
-    $jenis_manual = trim($_POST['jenis_manual'] ?? '');
+    $id_jenis     = (int)($_POST['id_jenis'] ?? 0);
     $id_hutan_raw = $_POST['id_hutan'] ?? '';
     $hutan_manual = trim($_POST['hutan_manual'] ?? '');
-
-    // Handle Jenis Kejahatan (Pilihan atau Ketik Manual)
-    $id_jenis = 0;
-    if ($id_jenis_raw === 'manual' || (!empty($jenis_manual) && empty($id_jenis_raw))) {
-        if (!empty($jenis_manual)) {
-            $stmtJenis = $db->prepare("SELECT id_jenis FROM jenis_kejahatan WHERE LOWER(TRIM(nama_jenis)) = LOWER(?) LIMIT 1");
-            $stmtJenis->execute([$jenis_manual]);
-            $existingJenis = $stmtJenis->fetchColumn();
-            if ($existingJenis) {
-                $id_jenis = (int)$existingJenis;
-            } else {
-                $insJ = $db->prepare("INSERT INTO jenis_kejahatan (nama_jenis, keterangan) VALUES (?, 'Ditambahkan manual oleh masyarakat')");
-                $insJ->execute([$jenis_manual]);
-                $id_jenis = (int)$db->lastInsertId();
-            }
-        }
-    } else {
-        $id_jenis = (int)$id_jenis_raw;
-    }
 
     // Handle Kawasan Hutan (Pilihan atau Ketik Manual)
     $id_hutan = 0;
@@ -55,10 +35,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id_hutan = (int)$id_hutan_raw;
     }
 
+    // Validasi file bukti foto jika diunggah
+    $fotoPath = null;
+    if (isset($_FILES['bukti_foto']) && $_FILES['bukti_foto']['error'] !== UPLOAD_ERR_NO_FILE) {
+        if ($_FILES['bukti_foto']['error'] !== UPLOAD_ERR_OK) {
+            $error = 'Terjadi kesalahan saat mengunggah file bukti foto.';
+        } else {
+            $allowedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            $fileExt     = strtolower(pathinfo($_FILES['bukti_foto']['name'] ?? '', PATHINFO_EXTENSION));
+            $checkImg    = @getimagesize($_FILES['bukti_foto']['tmp_name']);
+
+            if (!in_array($fileExt, $allowedExts) || $checkImg === false) {
+                $error = 'File bukti harus berupa foto/gambar asli (JPG, PNG, GIF, WEBP). File selain foto seperti dokumen PDF tidak dapat diunggah!';
+            } elseif ($_FILES['bukti_foto']['size'] > 5 * 1024 * 1024) {
+                $error = 'Ukuran file foto maksimal 5 MB.';
+            } else {
+                $fotoPath = uploadFoto($_FILES['bukti_foto'], 'uploads');
+                if (!$fotoPath) {
+                    $error = 'Gagal menyimpan file foto. Pastikan format gambar valid.';
+                }
+            }
+        }
+    }
+
+    $lat = ($latitude !== '') ? (float)$latitude : null;
+    $lng = ($longitude !== '') ? (float)$longitude : null;
+
     if (!$tanggal || !$lokasi || !$deskripsi || !$id_jenis || !$id_hutan) {
-        $error = 'Semua field wajib harus diisi. Pastikan jenis kejahatan dan kawasan hutan telah dipilih atau diketik manual.';
-    } else {
-        $fotoPath = uploadFoto($_FILES['bukti_foto'] ?? null, 'uploads');
+        $error = 'Semua field wajib harus diisi. Pastikan jenis kejahatan telah dipilih dan kawasan hutan telah dipilih atau diketik manual.';
+    } elseif ($lat === null || $lng === null) {
+        $error = 'Titik lokasi pada peta wajib ditentukan di dalam wilayah Kabupaten Kolaka.';
+    } elseif ($lat < -4.65 || $lat > -3.60 || $lng < 121.10 || $lng > 121.85) {
+        $error = 'Laporan tidak dapat dikirim: Lokasi kejadian yang Anda tentukan berada di luar wilayah Kabupaten Kolaka. Sistem pelaporan ini khusus dibatasi hanya untuk wilayah Kabupaten Kolaka.';
+    }
+
+    if (empty($error)) {
         $db->prepare("INSERT INTO pengaduan (tanggal_kejadian,lokasi,latitude,longitude,deskripsi,bukti_foto,status,id_user,id_jenis,id_hutan) VALUES (?,?,?,?,?,?,?,?,?,?)")->execute([$tanggal, $lokasi, $latitude, $longitude, $deskripsi, $fotoPath, 'Baru', $uid, $id_jenis, $id_hutan]);
         setFlash('success', 'Laporan berhasil dikirim! Kami akan segera memverifikasi laporan Anda.');
         redirect(BASE_URL . 'pages/masyarakat/riwayat_laporan.php');
@@ -184,38 +195,26 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
                 </div>
                 <div class="alert alert-info"><i class="fas fa-info-circle"></i> Isi formulir di bawah ini dengan lengkap dan akurat. Laporan Anda akan diverifikasi oleh Admin sebelum ditindaklanjuti.</div>
 
-                <form method="POST" enctype="multipart/form-data">
+                <form method="POST" enctype="multipart/form-data" id="formBuatLaporan" onsubmit="return validateLokasiKolaka(event)">
                     <div class="laporan-grid">
-                        <!-- Kiri: Informasi Kejadian -->
+                        <!-- Kiri: Informasi Laporan -->
                         <div>
                             <div class="card" style="margin-bottom:16px">
                                 <div class="card-header">
-                                    <h3><i class="fas fa-info-circle" style="color:#1a7a3f;margin-right:8px"></i>Informasi Kejadian</h3>
+                                    <h3><i class="fas fa-info-circle" style="color:#1a7a3f;margin-right:8px"></i>Informasi Laporan</h3>
                                 </div>
                                 <div class="card-body">
                                     
-                                    <!-- Jenis Kejahatan (Pilih / Ketik Manual) -->
+                                    <!-- Jenis Kejahatan -->
                                     <div class="form-group">
-                                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-                                            <label class="form-label" style="margin-bottom:0">Jenis Kejahatan <span class="required">*</span></label>
-                                            <button type="button" class="toggle-btn" id="btnToggleJenis" onclick="toggleManualJenis()">
-                                                <i class="fas fa-pen"></i> <span>Ketik Manual</span>
-                                            </button>
-                                        </div>
+                                        <label class="form-label">Jenis Kejahatan <span class="required">*</span></label>
                                         <div class="input-group" id="groupSelectJenis"><i class="fas fa-tag input-icon"></i>
-                                            <select name="id_jenis" id="selectJenis" class="form-select" style="padding-left:38px" onchange="onJenisChange(this)">
+                                            <select name="id_jenis" id="selectJenis" class="form-select" style="padding-left:38px" required>
                                                 <option value="">-- Pilih Jenis Kejahatan --</option>
                                                 <?php foreach ($jenisList as $j): ?>
                                                     <option value="<?= $j['id_jenis'] ?>" <?= (($_POST['id_jenis'] ?? '') == $j['id_jenis']) ? 'selected' : '' ?>><?= sanitize($j['nama_jenis']) ?></option>
                                                 <?php endforeach; ?>
-                                                <option value="manual" <?= (($_POST['id_jenis'] ?? '') === 'manual') ? 'selected' : '' ?>>✍️ Ketik Manual (Jenis Lainnya)...</option>
                                             </select>
-                                        </div>
-                                        <div id="containerJenisManual" style="display:<?= (!empty($_POST['jenis_manual']) || ($_POST['id_jenis'] ?? '') === 'manual') ? 'block' : 'none' ?>;margin-top:8px">
-                                            <div class="input-group"><i class="fas fa-pen input-icon"></i>
-                                                <input type="text" name="jenis_manual" id="jenis_manual" class="form-control" style="padding-left:38px" placeholder="Ketik nama jenis kejahatan baru..." value="<?= sanitize($_POST['jenis_manual'] ?? '') ?>">
-                                            </div>
-                                            <div class="form-hint" style="color:#1a7a3f;font-size:11px;margin-top:4px"><i class="fas fa-check-circle"></i> Mode input manual aktif untuk jenis kejahatan.</div>
                                         </div>
                                     </div>
 
@@ -245,14 +244,14 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
                                     </div>
 
                                     <div class="form-group">
-                                        <label class="form-label">Tanggal Kejadian <span class="required">*</span></label>
+                                        <label class="form-label">Tanggal Laporan <span class="required">*</span></label>
                                         <div class="input-group"><i class="fas fa-calendar input-icon"></i>
                                             <input type="date" name="tanggal_kejadian" class="form-control" required max="<?= date('Y-m-d') ?>" value="<?= sanitize($_POST['tanggal_kejadian'] ?? '') ?>">
                                         </div>
                                     </div>
 
                                     <div class="form-group">
-                                        <label class="form-label">Lokasi Kejadian (Detail Alamat) <span class="required">*</span></label>
+                                        <label class="form-label">Lokasi (Detail Alamat) <span class="required">*</span></label>
                                         <div class="input-group"><i class="fas fa-map-marker-alt input-icon" style="top:12px;transform:none"></i>
                                             <textarea name="lokasi" id="textareaLokasi" class="form-control" rows="3" style="padding-left:38px" placeholder="cth: Blok C Sektor 3, dekat sungai..." required><?= sanitize($_POST['lokasi'] ?? '') ?></textarea>
                                         </div>
@@ -271,16 +270,22 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
                         <!-- Kanan: Peta, Bukti Foto, Komitmen -->
                         <div>
                             <div class="card" style="margin-bottom:16px">
-                                <div class="card-header">
-                                    <h3><i class="fas fa-map-marked-alt" style="color:#1a7a3f;margin-right:8px"></i>Peta Lokasi Kejadian</h3>
-                                    <span style="font-size:11px;color:#64748b">Cari & Tandai Titik</span>
+                                <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
+                                    <h3><i class="fas fa-map-marked-alt" style="color:#1a7a3f;margin-right:8px"></i>Peta Lokasi</h3>
+                                    <span class="badge" style="background:#e0f2fe;color:#0369a1;font-weight:700;font-size:11px;padding:4px 8px;border-radius:4px"><i class="fas fa-shield-alt"></i> Khusus Wilayah Kab. Kolaka</span>
                                 </div>
                                 <div class="card-body" style="padding:0">
                                     
+                                    <!-- Info pembatasan wilayah Kolaka -->
+                                    <div style="font-size:11.5px;color:#0369a1;background:#eff6ff;padding:8px 12px;border-bottom:1px solid #dbeafe;display:flex;align-items:center;gap:6px">
+                                        <i class="fas fa-info-circle" style="flex-shrink:0"></i>
+                                        <span>Laporan hanya dapat dikirim jika lokasi berada di dalam <strong>wilayah Kabupaten Kolaka</strong>. Titik di luar Kolaka tidak diizinkan.</span>
+                                    </div>
+
                                     <!-- Search & Current Location Toolbar -->
                                     <div class="map-search-toolbar">
                                         <div style="flex:1;min-width:180px;position:relative">
-                                            <input type="text" id="mapSearchInput" class="form-control" style="padding-left:32px;font-size:12px;height:34px" placeholder="Cari nama tempat (cth: Pomalaa, Kolaka)..." onkeydown="if(event.key==='Enter'){event.preventDefault();cariLokasi();}">
+                                            <input type="text" id="mapSearchInput" class="form-control" style="padding-left:32px;font-size:12px;height:34px" placeholder="Cari tempat di Kolaka (cth: Pomalaa, Wolo)..." onkeydown="if(event.key==='Enter'){event.preventDefault();cariLokasi();}">
                                             <i class="fas fa-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:12px"></i>
                                         </div>
                                         <button type="button" class="btn btn-primary btn-sm" onclick="cariLokasi()" style="height:34px;padding:0 12px;font-size:12px">
@@ -330,11 +335,11 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
                                         <i class="fas fa-cloud-upload-alt" id="uploadIcon"></i>
                                         <p style="font-size:14px;font-weight:600;color:#374151;margin-bottom:4px" id="uploadText">Klik untuk unggah foto</p>
                                         <p style="font-size:12px;color:#94a3b8">JPG, PNG, GIF, WEBP • Maks 5 MB</p>
-                                        <input type="file" name="bukti_foto" id="fotoInput" accept="image/*" style="display:none" onchange="previewFoto(this)">
+                                        <input type="file" name="bukti_foto" id="fotoInput" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp" style="display:none" onchange="previewFoto(this)">
                                     </div>
                                     <img id="previewImg" style="display:none;width:100%;border-radius:10px;margin-top:14px;border:2px solid #e2e8f0;max-height:280px;object-fit:cover">
                                     <button type="button" id="removeBtn" style="display:none;margin-top:8px;width:100%" class="btn btn-secondary btn-sm" onclick="removeFoto()"><i class="fas fa-times"></i> Hapus Foto</button>
-                                    <div class="alert alert-warning" style="margin-top:14px;font-size:12px"><i class="fas fa-exclamation-triangle"></i> Foto yang jelas dan relevan akan membantu proses verifikasi dan penanganan laporan Anda.</div>
+                                    <div class="alert alert-warning" style="margin-top:14px;font-size:12px"><i class="fas fa-exclamation-triangle"></i> Khusus file foto/gambar (JPG, PNG, GIF, WEBP). File selain foto seperti PDF tidak dapat diunggah.</div>
                                 </div>
                             </div>
 
@@ -367,6 +372,23 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
         function previewFoto(input) {
             const file = input.files[0];
             if (!file) return;
+
+            const allowedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            const ext = file.name.split('.').pop().toLowerCase();
+            const isImage = file.type.startsWith('image/') && allowedExts.includes(ext);
+
+            if (!isImage) {
+                alert('File yang dipilih bukan foto! Hanya file gambar (JPG, JPEG, PNG, GIF, WEBP) yang diperbolehkan. Dokumen seperti PDF tidak dapat diunggah.');
+                removeFoto();
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Ukuran file foto maksimal 5 MB.');
+                removeFoto();
+                return;
+            }
+
             const reader = new FileReader();
             reader.onload = e => {
                 document.getElementById('previewImg').src = e.target.result;
@@ -398,7 +420,13 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
             e.preventDefault();
             uploadArea.classList.remove('drag');
             const f = e.dataTransfer.files[0];
-            if (f && f.type.startsWith('image/')) {
+            if (f) {
+                const allowedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+                const ext = f.name.split('.').pop().toLowerCase();
+                if (!f.type.startsWith('image/') || !allowedExts.includes(ext)) {
+                    alert('Hanya file foto/gambar (JPG, PNG, GIF, WEBP) yang diperbolehkan! File dokumen seperti PDF tidak dapat diunggah.');
+                    return;
+                }
                 const dt = new DataTransfer();
                 dt.items.add(f);
                 document.getElementById('fotoInput').files = dt.files;
@@ -406,45 +434,7 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
             }
         });
 
-        // Toggle Manual Input Jenis Kejahatan
-        function toggleManualJenis() {
-            const sel = document.getElementById('selectJenis');
-            const container = document.getElementById('containerJenisManual');
-            const input = document.getElementById('jenis_manual');
-            const btn = document.getElementById('btnToggleJenis');
 
-            if (container.style.display === 'none') {
-                container.style.display = 'block';
-                sel.value = 'manual';
-                btn.classList.add('active');
-                btn.innerHTML = '<i class="fas fa-list"></i> <span>Pilih dari Daftar</span>';
-                input.focus();
-            } else {
-                container.style.display = 'none';
-                if (sel.value === 'manual') sel.value = '';
-                btn.classList.remove('active');
-                btn.innerHTML = '<i class="fas fa-pen"></i> <span>Ketik Manual</span>';
-                input.value = '';
-            }
-        }
-
-        function onJenisChange(sel) {
-            const container = document.getElementById('containerJenisManual');
-            const input = document.getElementById('jenis_manual');
-            const btn = document.getElementById('btnToggleJenis');
-
-            if (sel.value === 'manual') {
-                container.style.display = 'block';
-                btn.classList.add('active');
-                btn.innerHTML = '<i class="fas fa-list"></i> <span>Pilih dari Daftar</span>';
-                input.focus();
-            } else {
-                container.style.display = 'none';
-                btn.classList.remove('active');
-                btn.innerHTML = '<i class="fas fa-pen"></i> <span>Ketik Manual</span>';
-                input.value = '';
-            }
-        }
 
         // Toggle Manual Input Kawasan Hutan
         function toggleManualHutan() {
@@ -486,20 +476,71 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
             }
         }
 
-        // Inisialisasi Peta Leaflet
-        // Default center Sulawesi Tenggara / Pomalaa region (-4.18, 121.60) atau tengah Indonesia
-        const defaultLat = -4.1800;
-        const defaultLng = 121.6000;
-        const map = L.map('map').setView([defaultLat, defaultLng], 7);
+        // Batas Koordinat Wilayah Kabupaten Kolaka (Sulawesi Tenggara)
+        const KOLAKA_BOUNDS = {
+            minLat: -4.65,
+            maxLat: -3.60,
+            minLng: 121.10,
+            maxLng: 121.85
+        };
+
+        function isInsideKolaka(lat, lng) {
+            return lat >= KOLAKA_BOUNDS.minLat && lat <= KOLAKA_BOUNDS.maxLat &&
+                   lng >= KOLAKA_BOUNDS.minLng && lng <= KOLAKA_BOUNDS.maxLng;
+        }
+
+        // Inisialisasi Peta Leaflet Berpusat di Kabupaten Kolaka
+        const defaultLat = -4.0500;
+        const defaultLng = 121.6100;
+        const map = L.map('map', {
+            maxBounds: [
+                [-5.10, 120.60],
+                [-3.20, 122.30]
+            ],
+            minZoom: 8
+        }).setView([defaultLat, defaultLng], 10);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
+        // Garis batas area diperbolehkan (Kabupaten Kolaka)
+        const kolakaArea = L.rectangle([
+            [-4.65, 121.10],
+            [-3.60, 121.85]
+        ], {
+            color: '#1a7a3f',
+            weight: 2,
+            dashArray: '5, 5',
+            fillColor: '#1a7a3f',
+            fillOpacity: 0.05
+        }).addTo(map);
+        kolakaArea.bindTooltip('Batas Wilayah Pelaporan: Kab. Kolaka', { sticky: true });
+
         let marker;
 
         function setTitikKejadian(lat, lng, zoomLevel = null) {
+            const statusEl = document.getElementById('searchStatus');
+
+            // Cek apakah koordinat berada di dalam Kabupaten Kolaka
+            if (!isInsideKolaka(lat, lng)) {
+                statusEl.style.display = 'block';
+                statusEl.style.background = '#fef2f2';
+                statusEl.style.borderColor = '#fecaca';
+                statusEl.innerHTML = `<span style="color:#dc2626"><i class="fas fa-ban"></i> <strong>Lokasi Ditolak:</strong> Koordinat (${lat.toFixed(6)}, ${lng.toFixed(6)}) berada <strong>di luar wilayah Kabupaten Kolaka</strong>. Sistem ini hanya menerima laporan untuk kejadian di wilayah Kab. Kolaka.</span>`;
+
+                alert('Peringatan: Titik lokasi yang Anda pilih berada di luar wilayah Kabupaten Kolaka!\n\nSistem pelaporan ini khusus dibatasi hanya untuk wilayah Kabupaten Kolaka. Silakan klik titik di dalam batas wilayah Kab. Kolaka.');
+
+                document.getElementById('latitude').value = '';
+                document.getElementById('longitude').value = '';
+                if (marker) {
+                    map.removeLayer(marker);
+                    marker = null;
+                }
+                return false;
+            }
+
             document.getElementById('latitude').value = lat.toFixed(6);
             document.getElementById('longitude').value = lng.toFixed(6);
 
@@ -509,11 +550,16 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
                 marker = L.marker([lat, lng]).addTo(map);
             }
 
-            marker.bindPopup(`<b>Titik Kejadian Terpilih</b><br>Lat: ${lat.toFixed(6)}<br>Lng: ${lng.toFixed(6)}`).openPopup();
+            marker.bindPopup(`<b>Titik Laporan (Kab. Kolaka)</b><br>Lat: ${lat.toFixed(6)}<br>Lng: ${lng.toFixed(6)}`).openPopup();
 
             if (zoomLevel) {
                 map.flyTo([lat, lng], zoomLevel, { duration: 1.2 });
             }
+
+            statusEl.style.display = 'block';
+            statusEl.style.background = '#f0fdf4';
+            statusEl.style.borderColor = '#bbf7d0';
+            statusEl.innerHTML = `<span style="color:#15803d"><i class="fas fa-check-circle"></i> Titik lokasi valid di Kabupaten Kolaka: <strong>${lat.toFixed(6)}, ${lng.toFixed(6)}</strong></span>`;
 
             // Reverse geocoding untuk update textarea lokasi jika belum diisi atau terisi otomatis
             fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
@@ -528,23 +574,20 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
                     }
                 })
                 .catch(err => console.log('Geocoding:', err));
+
+            return true;
         }
 
         // Klik pada Peta untuk menandai titik kejadian
         map.on('click', function(e) {
             setTitikKejadian(e.latlng.lat, e.latlng.lng);
-            const statusEl = document.getElementById('searchStatus');
-            statusEl.style.display = 'block';
-            statusEl.style.background = '#f0fdf4';
-            statusEl.style.borderColor = '#bbf7d0';
-            statusEl.innerHTML = `<span style="color:#15803d"><i class="fas fa-check-circle"></i> Titik kejadian disetel ke koordinat: <strong>${e.latlng.lat.toFixed(6)}, ${e.latlng.lng.toFixed(6)}</strong></span>`;
         });
 
-        // Fitur Cari Lokasi (contoh: masyarakat ketik "pomala" -> peta pindah ke Pomala)
+        // Fitur Cari Lokasi di Wilayah Kolaka
         function cariLokasi() {
-            const query = document.getElementById('mapSearchInput').value.trim();
+            let query = document.getElementById('mapSearchInput').value.trim();
             if (!query) {
-                alert('Silakan ketik nama lokasi atau daerah yang ingin dicari.');
+                alert('Silakan ketik nama tempat atau daerah di Kabupaten Kolaka.');
                 return;
             }
 
@@ -552,47 +595,37 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
             statusEl.style.display = 'block';
             statusEl.style.background = '#eff6ff';
             statusEl.style.borderColor = '#bfdbfe';
-            statusEl.innerHTML = `<span style="color:#1d4ed8"><i class="fas fa-spinner fa-spin"></i> Mencari lokasi "<strong>${query}</strong>"...</span>`;
+            statusEl.innerHTML = `<span style="color:#1d4ed8"><i class="fas fa-spinner fa-spin"></i> Mencari lokasi "<strong>${query}</strong>" di wilayah Kolaka...</span>`;
 
-            // Prioritaskan pencarian di Indonesia
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=id&q=${encodeURIComponent(query)}`)
+            const searchQuery = query.toLowerCase().includes('kolaka') ? query : `${query}, Kolaka`;
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=id&viewbox=121.10,-3.60,121.85,-4.65&bounded=0&q=${encodeURIComponent(searchQuery)}`)
                 .then(r => r.json())
                 .then(data => {
                     if (data && data.length > 0) {
-                        const target = data[0];
+                        const target = data.find(item => isInsideKolaka(parseFloat(item.lat), parseFloat(item.lon))) || data[0];
                         const lat = parseFloat(target.lat);
                         const lon = parseFloat(target.lon);
 
-                        map.flyTo([lat, lon], 13, { duration: 1.5 });
-                        statusEl.style.background = '#f0fdf4';
-                        statusEl.style.borderColor = '#bbf7d0';
-                        statusEl.innerHTML = `<span style="color:#15803d"><i class="fas fa-check-circle"></i> Peta dipindahkan ke <strong>${target.display_name.split(',')[0]}</strong>. Silakan klik tepat pada titik kejadian.</span>`;
+                        if (!isInsideKolaka(lat, lon)) {
+                            statusEl.style.background = '#fef2f2';
+                            statusEl.style.borderColor = '#fecaca';
+                            statusEl.innerHTML = `<span style="color:#dc2626"><i class="fas fa-ban"></i> Hasil pencarian "<strong>${target.display_name.split(',')[0]}</strong>" berada di luar wilayah Kabupaten Kolaka. Harap cari daerah di dalam wilayah Kab. Kolaka.</span>`;
+                            return;
+                        }
+
+                        map.flyTo([lat, lon], 14, { duration: 1.5 });
+                        setTitikKejadian(lat, lon);
                     } else {
-                        // Coba pencarian global jika pencarian spesifik ID tidak ketemu
-                        return fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
-                            .then(r => r.json())
-                            .then(dataGlobal => {
-                                if (dataGlobal && dataGlobal.length > 0) {
-                                    const target = dataGlobal[0];
-                                    const lat = parseFloat(target.lat);
-                                    const lon = parseFloat(target.lon);
-                                    map.flyTo([lat, lon], 13, { duration: 1.5 });
-                                    statusEl.style.background = '#f0fdf4';
-                                    statusEl.style.borderColor = '#bbf7d0';
-                                    statusEl.innerHTML = `<span style="color:#15803d"><i class="fas fa-check-circle"></i> Peta dipindahkan ke <strong>${target.display_name.split(',')[0]}</strong>. Silakan klik tepat pada titik kejadian.</span>`;
-                                } else {
-                                    statusEl.style.background = '#fef2f2';
-                                    statusEl.style.borderColor = '#fecaca';
-                                    statusEl.innerHTML = `<span style="color:#dc2626"><i class="fas fa-exclamation-circle"></i> Lokasi "<strong>${query}</strong>" tidak ditemukan. Coba periksa ejaan atau nama daerah terdekat.</span>`;
-                                }
-                            });
+                        statusEl.style.background = '#fef2f2';
+                        statusEl.style.borderColor = '#fecaca';
+                        statusEl.innerHTML = `<span style="color:#dc2626"><i class="fas fa-exclamation-circle"></i> Lokasi "<strong>${query}</strong>" tidak ditemukan di wilayah Kolaka. Coba periksa ejaan atau nama desa/kecamatan terdekat.</span>`;
                     }
                 })
                 .catch(err => {
                     console.error('Search error:', err);
                     statusEl.style.background = '#fef2f2';
                     statusEl.style.borderColor = '#fecaca';
-                    statusEl.innerHTML = `<span style="color:#dc2626"><i class="fas fa-exclamation-triangle"></i> Terjadi kesalahan saat mencari lokasi. Silakan periksa koneksi internet.</span>`;
+                    statusEl.innerHTML = `<span style="color:#dc2626"><i class="fas fa-exclamation-triangle"></i> Terjadi kesalahan saat mencari lokasi. Silakan klik langsung pada peta.</span>`;
                 });
         }
 
@@ -614,11 +647,15 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
                     const lat = pos.coords.latitude;
                     const lng = pos.coords.longitude;
 
-                    setTitikKejadian(lat, lng, 16);
+                    if (!isInsideKolaka(lat, lng)) {
+                        statusEl.style.background = '#fef2f2';
+                        statusEl.style.borderColor = '#fecaca';
+                        statusEl.innerHTML = `<span style="color:#dc2626"><i class="fas fa-ban"></i> <strong>Lokasi GPS Di Luar Wilayah:</strong> Koordinat perangkat Anda (${lat.toFixed(4)}, ${lng.toFixed(4)}) terdeteksi di luar wilayah Kabupaten Kolaka. Sistem pelaporan ini khusus untuk Kabupaten Kolaka.</span>`;
+                        alert('Lokasi GPS Anda saat ini terdeteksi di luar wilayah Kabupaten Kolaka. Laporan hanya dapat dibuat untuk kejadian di wilayah Kabupaten Kolaka. Silakan pilih titik kejadian secara manual pada peta.');
+                        return;
+                    }
 
-                    statusEl.style.background = '#f0fdf4';
-                    statusEl.style.borderColor = '#bbf7d0';
-                    statusEl.innerHTML = `<span style="color:#15803d"><i class="fas fa-check-circle"></i> Lokasi GPS Anda berhasil digunakan! Koordinat otomatis terisi.</span>`;
+                    setTitikKejadian(lat, lng, 16);
                 },
                 function(err) {
                     let errMsg = 'Tidak dapat mengambil lokasi Anda saat ini.';
@@ -635,6 +672,28 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
                 },
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
+        }
+
+        // Validasi Form Submit untuk Pembatasan Wilayah Kolaka
+        function validateLokasiKolaka(e) {
+            const lat = parseFloat(document.getElementById('latitude').value);
+            const lng = parseFloat(document.getElementById('longitude').value);
+
+            if (isNaN(lat) || isNaN(lng)) {
+                e.preventDefault();
+                alert('Titik lokasi pada peta wajib ditentukan!\n\nSilakan klik titik kejadian pada peta di dalam batas wilayah Kabupaten Kolaka.');
+                document.getElementById('map').scrollIntoView({ behavior: 'smooth' });
+                return false;
+            }
+
+            if (!isInsideKolaka(lat, lng)) {
+                e.preventDefault();
+                alert('Laporan tidak dapat dikirim!\n\nTitik lokasi yang Anda pilih berada di luar wilayah Kabupaten Kolaka. Sistem pelaporan ini khusus dibatasi hanya untuk wilayah Kabupaten Kolaka.');
+                document.getElementById('map').scrollIntoView({ behavior: 'smooth' });
+                return false;
+            }
+
+            return true;
         }
 
         // Cek jika sudah ada koordinat yang terisi (misal saat validasi form gagal / kembali)

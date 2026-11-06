@@ -75,15 +75,30 @@ function getStatusBadge($status)
 function uploadFoto($file, $subfolder = 'uploads')
 {
     if (!$file || $file['error'] !== UPLOAD_ERR_OK) return null;
+    $allowedExts  = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
     $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    if (!in_array($file['type'], $allowedTypes)) return null;
+
+    $ext = strtolower(pathinfo($file['name'] ?? '', PATHINFO_EXTENSION));
+    if (!in_array($ext, $allowedExts)) return null;
+
+    if (!empty($file['type']) && !in_array(strtolower($file['type']), $allowedTypes)) return null;
     if ($file['size'] > 5 * 1024 * 1024) return null; // 5MB
 
-    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-    $filename = uniqid('foto_') . '.' . strtolower($ext);
+    // Validasi apakah benar-benar file gambar asli (bukan dokumen/PDF yang diganti ekstensi)
+    $checkImg = @getimagesize($file['tmp_name']);
+    if ($checkImg === false) return null;
+
+    $filename = uniqid('foto_') . '.' . $ext;
     $uploadDir = ROOT_PATH . $subfolder . '/';
     if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-    if (move_uploaded_file($file['tmp_name'], $uploadDir . $filename)) {
+    $moved = false;
+    if (is_uploaded_file($file['tmp_name'])) {
+        $moved = @move_uploaded_file($file['tmp_name'], $uploadDir . $filename);
+    } elseif (php_sapi_name() === 'cli' && file_exists($file['tmp_name'])) {
+        $moved = @copy($file['tmp_name'], $uploadDir . $filename) && @unlink($file['tmp_name']);
+    }
+
+    if ($moved) {
         return $subfolder . '/' . $filename;
     }
     return null;

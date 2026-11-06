@@ -1182,7 +1182,7 @@ $totalSelesai = count(array_filter($laporanKejadian, fn($l) => $l['status'] === 
                 </div>
                 <h3>Kejadian yang Telah Dilaporkan</h3>
                 <div class="underline"></div>
-                <p>Informasi foto bukti, lokasi, dan tanggal kejadian yang telah dilaporkan masyarakat untuk mencegah pelaporan berulang</p>
+                <p>Informasi foto bukti, lokasi, dan tanggal laporan yang telah dilaporkan masyarakat untuk mencegah pelaporan berulang</p>
             </div>
 
             <!-- Notice Banner Pencegahan Laporan Berulang -->
@@ -1274,11 +1274,11 @@ $totalSelesai = count(array_filter($laporanKejadian, fn($l) => $l['status'] === 
                                     </div>
                                 </div>
 
-                                <!-- Tanggal Kejadian -->
+                                <!-- Tanggal Laporan -->
                                 <div class="kejadian-item tanggal">
                                     <i class="fas fa-calendar-alt"></i>
                                     <div>
-                                        <strong>Tanggal Kejadian:</strong>
+                                        <strong>Tanggal Laporan:</strong>
                                         <span class="tanggal-val"><?= $tglFormatted ?></span>
                                     </div>
                                 </div>
@@ -1471,7 +1471,7 @@ $totalSelesai = count(array_filter($laporanKejadian, fn($l) => $l['status'] === 
                 <div class="photo-modal-info">
                     <h5 id="photoModalLokasi">-</h5>
                     <p>
-                        <i class="fas fa-calendar-alt"></i> Tanggal Kejadian: <span id="photoModalTanggal" style="font-weight:600">-</span>
+                        <i class="fas fa-calendar-alt"></i> Tanggal Laporan: <span id="photoModalTanggal" style="font-weight:600">-</span>
                         &nbsp;•&nbsp; <span id="photoModalJenis" style="color:#1A3A6B;font-weight:700"></span>
                     </p>
                 </div>

@@ -11,37 +11,40 @@ if (isLoggedIn()) {
 }
 
 $error = '';
+$flash = getFlash();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $role     = sanitize($_POST['role'] ?? '');
     $username = sanitize($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    if (!in_array($role, ['masyarakat', 'admin', 'polisi', 'pimpinan'])) {
-        $error = 'Pilih peran pengguna yang valid.';
-    } elseif (empty($username) || empty($password)) {
+    if (empty($username) || empty($password)) {
         $error = 'Username dan password tidak boleh kosong.';
     } else {
         $db = getDB();
-        $tableMap = [
-            'masyarakat' => ['masyarakat', 'id_user'],
-            'admin'      => ['admin', 'id_admin'],
-            'polisi'     => ['polisi_hutan', 'id_polisi'],
-            'pimpinan'   => ['pimpinan', 'id_pimpinan'],
+        $roles = [
+            'admin'      => ['table' => 'admin',        'idCol' => 'id_admin',    'dest' => 'pages/admin/dashboard.php'],
+            'polisi'     => ['table' => 'polisi_hutan', 'idCol' => 'id_polisi',   'dest' => 'pages/polisi/dashboard.php'],
+            'pimpinan'   => ['table' => 'pimpinan',     'idCol' => 'id_pimpinan', 'dest' => 'pages/pimpinan/dashboard.php'],
+            'masyarakat' => ['table' => 'masyarakat',   'idCol' => 'id_user',     'dest' => 'pages/masyarakat/dashboard.php'],
         ];
-        [$table, $idCol] = $tableMap[$role];
-        $stmt = $db->prepare("SELECT * FROM $table WHERE username = ? LIMIT 1");
-        $stmt->execute([$username]);
-        $user = $stmt->fetch();
-        if ($user && password_verify($password, $user['password'])) {
-            $_SESSION['user_id']  = $user[$idCol];
-            $_SESSION['role']     = $role;
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['nama']     = $user['nama'];
-            $_SESSION['foto']     = $user['foto'] ?? null;
-            $dest = ['masyarakat' => 'pages/masyarakat/dashboard.php', 'admin' => 'pages/admin/dashboard.php', 'polisi' => 'pages/polisi/dashboard.php', 'pimpinan' => 'pages/pimpinan/dashboard.php'];
-            redirect(BASE_URL . $dest[$role]);
-        } else {
-            $error = 'Username atau password salah. Pastikan peran pengguna yang dipilih sudah benar.';
+
+        $authenticated = false;
+        foreach ($roles as $roleKey => $conf) {
+            $stmt = $db->prepare("SELECT * FROM {$conf['table']} WHERE username = ? LIMIT 1");
+            $stmt->execute([$username]);
+            $user = $stmt->fetch();
+            if ($user && password_verify($password, $user['password'])) {
+                $_SESSION['user_id']  = $user[$conf['idCol']];
+                $_SESSION['role']     = $roleKey;
+                $_SESSION['username'] = $user['username'];
+                $_SESSION['nama']     = $user['nama'];
+                $_SESSION['foto']     = $user['foto'] ?? null;
+                $authenticated = true;
+                redirect(BASE_URL . $conf['dest']);
+            }
+        }
+
+        if (!$authenticated) {
+            $error = 'Username atau password salah.';
         }
     }
 }
@@ -90,6 +93,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="auth-card-body">
+                    <?php if ($flash): ?>
+                        <div class="auth-alert auth-alert-<?= $flash['type'] === 'success' ? 'success' : 'danger' ?>">
+                            <i class="fas <?= $flash['type'] === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle' ?>"></i> <?= $flash['message'] ?>
+                        </div>
+                    <?php endif; ?>
+
                     <?php if ($error): ?>
                         <div class="auth-alert auth-alert-danger">
                             <i class="fas fa-exclamation-triangle"></i> <?= $error ?>
@@ -97,28 +106,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php endif; ?>
 
                     <form method="POST" autocomplete="off">
-                        <!-- Role Selector -->
-                        <div class="form-group">
-                            <label class="form-label">Peran Pengguna</label>
-                            <div class="role-selector">
-                                <?php
-                                $roles = [
-                                    'masyarakat' => ['icon' => 'fas fa-users',      'label' => 'Masyarakat'],
-                                    'admin'      => ['icon' => 'fas fa-user-shield', 'label' => 'Admin'],
-                                    'polisi'     => ['icon' => 'fas fa-hard-hat',   'label' => 'Polisi Hutan'],
-                                    'pimpinan'   => ['icon' => 'fas fa-user-tie',   'label' => 'Pimpinan'],
-                                ];
-                                foreach ($roles as $val => $r):
-                                    $checked = ($_POST['role'] ?? 'masyarakat') === $val ? 'checked' : '';
-                                ?>
-                                    <input type="radio" name="role" id="role_<?= $val ?>" value="<?= $val ?>" class="role-option" <?= $checked ?>>
-                                    <label for="role_<?= $val ?>" class="role-label">
-                                        <i class="<?= $r['icon'] ?>"></i> <?= $r['label'] ?>
-                                    </label>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-
                         <!-- Username -->
                         <div class="form-group">
                             <label class="form-label" for="username">Username</label>
