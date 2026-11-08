@@ -136,7 +136,7 @@ $flash = getFlash();
                                         <th>Pelapor</th>
                                         <th>Jenis Kejahatan</th>
                                         <th>Kawasan</th>
-                                        <th>Tanggal</th>
+                                        <th>Tanggal Laporan</th>
                                         <th>Status</th>
                                         <th>Aksi</th>
                                     </tr>

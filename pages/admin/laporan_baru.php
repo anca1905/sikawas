@@ -69,7 +69,7 @@ $laporan = $db->query("SELECT p.*,m.nama as pelapor,j.nama_jenis,h.nama_hutan FR
                                     <tr>
                                         <th>No</th>
                                         <th>Pelapor</th>
-                                        <th>Tgl Masuk</th>
+                                        <th>Tanggal Laporan</th>
                                         <th>Jenis Kejahatan</th>
                                         <th>Kawasan</th>
                                         <th>Lokasi</th>
