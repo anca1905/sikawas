@@ -112,7 +112,6 @@ $flash = getFlash();
                             </div>
                             <div class="card-body">
                                 <div class="info-row"><span class="info-label"><i class="fas fa-hashtag" style="color:#1a7a3f;margin-right:6px"></i>ID Laporan</span><span class="info-val">#<?= $r['id_laporan'] ?></span></div>
-                                <div class="info-row"><span class="info-label"><i class="fas fa-calendar" style="color:#1a7a3f;margin-right:6px"></i>Tgl Kejadian</span><span class="info-val"><?= formatTanggal($r['tanggal_kejadian']) ?></span></div>
                                 <div class="info-row"><span class="info-label"><i class="fas fa-clock" style="color:#1a7a3f;margin-right:6px"></i>Tgl Lapor</span><span class="info-val"><?= formatTanggal($r['tanggal_lapor']) ?></span></div>
                                 <div class="info-row"><span class="info-label"><i class="fas fa-tag" style="color:#1a7a3f;margin-right:6px"></i>Jenis Kejahatan</span><span class="info-val"><?= sanitize($r['nama_jenis']) ?></span></div>
                                 <div class="info-row"><span class="info-label"><i class="fas fa-map" style="color:#1a7a3f;margin-right:6px"></i>Kawasan Hutan</span><span class="info-val"><?= sanitize($r['nama_hutan']) ?></span></div>

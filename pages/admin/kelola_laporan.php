@@ -58,7 +58,7 @@ foreach ($laporan as $r) {
             'kawasan'  => $r['nama_hutan'],
             'lokasi'   => $r['lokasi'],
             'status'   => $r['status'],
-            'tanggal'  => formatTanggal($r['tanggal_kejadian']),
+            'tanggal'  => formatTanggal($r['tanggal_lapor']),
             'url'      => 'detail_pengaduan.php?id=' . $r['id_laporan']
         ];
     }
@@ -174,7 +174,7 @@ foreach ($laporan as $r) {
                                                     <span style="max-width:140px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="<?= sanitize($r['lokasi']) ?>"><?= sanitize($r['lokasi']) ?></span>
                                                 </div>
                                             </td>
-                                            <td><?= formatTanggal($r['tanggal_kejadian']) ?></td>
+                                            <td><?= formatTanggal($r['tanggal_lapor']) ?></td>
                                             <td><?= $r['nama_polisi'] ? sanitize($r['nama_polisi']) : '<span style="color:#94a3b8">-</span>' ?></td>
                                             <td><?= getStatusBadge($r['status']) ?></td>
                                             <td>

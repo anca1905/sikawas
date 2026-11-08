@@ -190,7 +190,7 @@ foreach ($laporan as $r) if (isset($sMap[$r['status']])) $sMap[$r['status']]++;
                                         <th>Jenis Kejahatan</th>
                                         <th>Kawasan Hutan</th>
                                         <th>Lokasi</th>
-                                        <th>Tgl Kejadian</th>
+                                        
                                         <th>Tgl Lapor</th>
                                         <th>Polisi</th>
                                         <th>Status</th>
@@ -204,7 +204,7 @@ foreach ($laporan as $r) if (isset($sMap[$r['status']])) $sMap[$r['status']]++;
                                             <td><?= sanitize($r['nama_jenis']) ?></td>
                                             <td><?= sanitize($r['nama_hutan']) ?></td>
                                             <td><?= sanitize($r['lokasi']) ?></td>
-                                            <td><?= formatTanggal($r['tanggal_kejadian']) ?></td>
+                                            
                                             <td><?= formatTanggal($r['tanggal_lapor']) ?></td>
                                             <td><?= $r['nama_polisi'] ? sanitize($r['nama_polisi']) : '<span style="color:#94a3b8">-</span>' ?></td>
                                             <td><?= getStatusBadge($r['status']) ?></td>

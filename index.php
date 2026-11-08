@@ -9,7 +9,7 @@ $stmtKejadian = $db->query("
     LEFT JOIN jenis_kejahatan j ON p.id_jenis = j.id_jenis
     LEFT JOIN jenis_kawasan_hutan h ON p.id_hutan = h.id_hutan
     WHERE p.status != 'Ditolak'
-    ORDER BY p.tanggal_kejadian DESC, p.id_laporan DESC
+    ORDER BY p.tanggal_lapor DESC, p.id_laporan DESC
 ");
 $laporanKejadian = $stmtKejadian->fetchAll();
 $totalLaporan = count($laporanKejadian);
@@ -1232,7 +1232,7 @@ $totalSelesai = count(array_filter($laporanKejadian, fn($l) => $l['status'] === 
                         $hasFoto = !empty($row['bukti_foto']) && file_exists(ROOT_PATH . $row['bukti_foto']);
                         $fotoUrl = $hasFoto ? (BASE_URL . sanitize($row['bukti_foto'])) : '';
                         $badgeStatus = getStatusBadge($row['status']);
-                        $tglFormatted = formatTanggal($row['tanggal_kejadian']);
+                        $tglFormatted = formatTanggal(date('Y-m-d', strtotime($row['tanggal_lapor'])));
                         $lokasiFull = trim($row['lokasi'] . ' ' . ($row['nama_hutan'] ?? '') . ' ' . ($row['lokasi_hutan'] ?? ''));
                         ?>
                         <div class="kejadian-card item-laporan"
@@ -1259,7 +1259,7 @@ $totalSelesai = count(array_filter($laporanKejadian, fn($l) => $l['status'] === 
                                 </div>
                             </div>
 
-                            <!-- Detail Laporan: Lokasi & Tanggal Kejadian -->
+                            <!-- Detail Laporan: Lokasi & Deskripsi -->
                             <div class="kejadian-card-body">
                                 <!-- Lokasi -->
                                 <div class="kejadian-item lokasi">
@@ -1271,15 +1271,6 @@ $totalSelesai = count(array_filter($laporanKejadian, fn($l) => $l['status'] === 
                                                 <i class="fas fa-tree"></i> <?= sanitize($row['nama_hutan']) ?>
                                             </div>
                                         <?php endif; ?>
-                                    </div>
-                                </div>
-
-                                <!-- Tanggal Laporan -->
-                                <div class="kejadian-item tanggal">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <div>
-                                        <strong>Tanggal Laporan:</strong>
-                                        <span class="tanggal-val"><?= $tglFormatted ?></span>
                                     </div>
                                 </div>
 

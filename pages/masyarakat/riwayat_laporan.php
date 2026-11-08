@@ -85,7 +85,6 @@ $flash = getFlash();
                                         <th>Jenis Kejahatan</th>
                                         <th>Kawasan</th>
                                         <th>Lokasi</th>
-                                        <th>Tgl Kejadian</th>
                                         <th>Tgl Lapor</th>
                                         <th>Status</th>
                                         <th>Aksi</th>
@@ -98,7 +97,6 @@ $flash = getFlash();
                                             <td><?= sanitize($r['nama_jenis']) ?></td>
                                             <td><?= sanitize($r['nama_hutan']) ?></td>
                                             <td><span style="max-width:150px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><?= sanitize($r['lokasi']) ?></span></td>
-                                            <td><?= formatTanggal($r['tanggal_kejadian']) ?></td>
                                             <td><?= formatTanggal($r['tanggal_lapor']) ?></td>
                                             <td><?= getStatusBadge($r['status']) ?></td>
                                             <td>

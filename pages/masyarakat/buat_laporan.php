@@ -6,7 +6,7 @@ $uid = $_SESSION['user_id'];
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $tanggal   = sanitize($_POST['tanggal_kejadian'] ?? '');
+    $tanggal   = date('Y-m-d');
     $lokasi    = sanitize($_POST['lokasi'] ?? '');
     $latitude  = sanitize($_POST['latitude'] ?? '');
     $longitude = sanitize($_POST['longitude'] ?? '');
@@ -240,13 +240,6 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
                                                 <input type="text" name="hutan_manual" id="hutan_manual" class="form-control" style="padding-left:38px" placeholder="Ketik nama kawasan hutan baru..." value="<?= sanitize($_POST['hutan_manual'] ?? '') ?>">
                                             </div>
                                             <div class="form-hint" style="color:#1a7a3f;font-size:11px;margin-top:4px"><i class="fas fa-check-circle"></i> Mode input manual aktif untuk kawasan hutan.</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="form-label">Tanggal Laporan <span class="required">*</span></label>
-                                        <div class="input-group"><i class="fas fa-calendar input-icon"></i>
-                                            <input type="date" name="tanggal_kejadian" class="form-control" required max="<?= date('Y-m-d') ?>" value="<?= sanitize($_POST['tanggal_kejadian'] ?? '') ?>">
                                         </div>
                                     </div>
 

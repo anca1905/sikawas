@@ -94,7 +94,6 @@ $flash = getFlash();
                                 <div class="info-row"><span class="info-label">Jenis Kejahatan</span><span class="info-val"><?= sanitize($r['nama_jenis']) ?></span></div>
                                 <div class="info-row"><span class="info-label">Kawasan Hutan</span><span class="info-val"><?= sanitize($r['nama_hutan']) ?></span></div>
                                 <div class="info-row"><span class="info-label">Lokasi</span><span class="info-val"><?= sanitize($r['lokasi']) ?></span></div>
-                                <div class="info-row"><span class="info-label">Tgl Kejadian</span><span class="info-val"><?= formatTanggal($r['tanggal_kejadian']) ?></span></div>
                                 <div class="info-row"><span class="info-label">Tgl Dilaporkan</span><span class="info-val"><?= formatTanggal($r['tanggal_lapor']) ?></span></div>
                                 <div class="info-row" style="flex-direction:column;gap:6px"><span class="info-label">Deskripsi</span><span class="info-val" style="background:#f8fafc;padding:12px;border-radius:8px;line-height:1.7"><?= nl2br(sanitize($r['deskripsi'])) ?></span></div>
                             </div>
