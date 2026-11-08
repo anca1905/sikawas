@@ -6,7 +6,8 @@ $uid = $_SESSION['user_id'];
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $tanggal   = date('Y-m-d');
+    $tanggal   = sanitize($_POST['tanggal_lapor'] ?? $_POST['tanggal_kejadian'] ?? date('Y-m-d'));
+    if (!$tanggal) $tanggal = date('Y-m-d');
     $lokasi    = sanitize($_POST['lokasi'] ?? '');
     $latitude  = sanitize($_POST['latitude'] ?? '');
     $longitude = sanitize($_POST['longitude'] ?? '');
@@ -70,7 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($error)) {
-        $db->prepare("INSERT INTO pengaduan (tanggal_kejadian,lokasi,latitude,longitude,deskripsi,bukti_foto,status,id_user,id_jenis,id_hutan) VALUES (?,?,?,?,?,?,?,?,?,?)")->execute([$tanggal, $lokasi, $latitude, $longitude, $deskripsi, $fotoPath, 'Baru', $uid, $id_jenis, $id_hutan]);
+        $tanggalLapor = $tanggal . ' ' . date('H:i:s');
+        $db->prepare("INSERT INTO pengaduan (tanggal_kejadian,lokasi,latitude,longitude,deskripsi,bukti_foto,status,id_user,id_jenis,id_hutan,tanggal_lapor) VALUES (?,?,?,?,?,?,?,?,?,?,?)")->execute([$tanggal, $lokasi, $latitude, $longitude, $deskripsi, $fotoPath, 'Baru', $uid, $id_jenis, $id_hutan, $tanggalLapor]);
         setFlash('success', 'Laporan berhasil dikirim! Kami akan segera memverifikasi laporan Anda.');
         redirect(BASE_URL . 'pages/masyarakat/riwayat_laporan.php');
     }
@@ -240,6 +242,13 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
                                                 <input type="text" name="hutan_manual" id="hutan_manual" class="form-control" style="padding-left:38px" placeholder="Ketik nama kawasan hutan baru..." value="<?= sanitize($_POST['hutan_manual'] ?? '') ?>">
                                             </div>
                                             <div class="form-hint" style="color:#1a7a3f;font-size:11px;margin-top:4px"><i class="fas fa-check-circle"></i> Mode input manual aktif untuk kawasan hutan.</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Tanggal Laporan <span class="required">*</span></label>
+                                        <div class="input-group"><i class="fas fa-calendar input-icon"></i>
+                                            <input type="date" name="tanggal_lapor" class="form-control" required max="<?= date('Y-m-d') ?>" value="<?= sanitize($_POST['tanggal_lapor'] ?? date('Y-m-d')) ?>">
                                         </div>
                                     </div>
 
