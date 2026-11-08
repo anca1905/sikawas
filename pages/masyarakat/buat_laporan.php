@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($lat === null || $lng === null) {
         $error = 'Titik lokasi pada peta wajib ditentukan di dalam wilayah Kabupaten Kolaka.';
     } elseif ($lat < -4.65 || $lat > -3.60 || $lng < 121.10 || $lng > 121.85) {
-        $error = 'Laporan tidak dapat dikirim: Lokasi kejadian yang Anda tentukan berada di luar wilayah Kabupaten Kolaka. Sistem pelaporan ini khusus dibatasi hanya untuk wilayah Kabupaten Kolaka.';
+        $error = 'Laporan tidak dapat dikirim: Lokasi yang Anda tentukan berada di luar wilayah Kabupaten Kolaka. Sistem pelaporan ini khusus dibatasi hanya untuk wilayah Kabupaten Kolaka.';
     }
 
     if (empty($error)) {
@@ -191,7 +191,7 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
                 <?php if ($error): ?><div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> <?= $error ?></div><?php endif; ?>
                 <div class="alert alert-warning" style="background:#fffbeb;border-color:#fde68a;color:#92400e;display:flex;align-items:flex-start;gap:10px;margin-bottom:14px">
                     <i class="fas fa-exclamation-triangle" style="font-size:16px;margin-top:2px;flex-shrink:0"></i>
-                    <div><strong>Pencegahan Laporan Ganda:</strong> Sebelum mengirim, pastikan kejadian di lokasi Anda belum pernah dilaporkan sebelumnya. Anda dapat memeriksa <a href="../../index.php#laporan-kejadian" target="_blank" style="color:#b45309;font-weight:700;text-decoration:underline">Daftar Kejadian yang Telah Dilaporkan (Foto, Lokasi, Tgl)</a> agar tidak membuat laporan berulang.</div>
+                    <div><strong>Pencegahan Laporan Ganda:</strong> Sebelum mengirim, pastikan informasi di lokasi Anda belum pernah dilaporkan sebelumnya. Anda dapat memeriksa <a href="../../index.php#laporan-kejadian" target="_blank" style="color:#b45309;font-weight:700;text-decoration:underline">Daftar Laporan yang Telah Masuk (Foto, Lokasi, Tanggal)</a> agar tidak membuat laporan berulang.</div>
                 </div>
                 <div class="alert alert-info"><i class="fas fa-info-circle"></i> Isi formulir di bawah ini dengan lengkap dan akurat. Laporan Anda akan diverifikasi oleh Admin sebelum ditindaklanjuti.</div>
 
@@ -312,7 +312,7 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
                                             </div>
                                         </div>
                                         <div style="font-size:11px;color:#64748b;display:flex;align-items:center;gap:6px">
-                                            <i class="fas fa-info-circle" style="color:#0284c7"></i> Cari lokasi, klik titik kejadian pada peta, atau klik <strong>Gunakan Lokasi Saat Ini</strong> untuk mengisi koordinat otomatis.
+                                            <i class="fas fa-info-circle" style="color:#0284c7"></i> Cari lokasi, klik titik lokasi pada peta, atau klik <strong>Gunakan Lokasi Saat Ini</strong> untuk mengisi koordinat otomatis.
                                         </div>
                                     </div>
                                 </div>
@@ -521,7 +521,7 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
                 statusEl.style.display = 'block';
                 statusEl.style.background = '#fef2f2';
                 statusEl.style.borderColor = '#fecaca';
-                statusEl.innerHTML = `<span style="color:#dc2626"><i class="fas fa-ban"></i> <strong>Lokasi Ditolak:</strong> Koordinat (${lat.toFixed(6)}, ${lng.toFixed(6)}) berada <strong>di luar wilayah Kabupaten Kolaka</strong>. Sistem ini hanya menerima laporan untuk kejadian di wilayah Kab. Kolaka.</span>`;
+                statusEl.innerHTML = `<span style="color:#dc2626"><i class="fas fa-ban"></i> <strong>Lokasi Ditolak:</strong> Koordinat (${lat.toFixed(6)}, ${lng.toFixed(6)}) berada <strong>di luar wilayah Kabupaten Kolaka</strong>. Sistem ini hanya menerima laporan untuk wilayah Kab. Kolaka.</span>`;
 
                 alert('Peringatan: Titik lokasi yang Anda pilih berada di luar wilayah Kabupaten Kolaka!\n\nSistem pelaporan ini khusus dibatasi hanya untuk wilayah Kabupaten Kolaka. Silakan klik titik di dalam batas wilayah Kab. Kolaka.');
 
@@ -644,7 +644,7 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
                         statusEl.style.background = '#fef2f2';
                         statusEl.style.borderColor = '#fecaca';
                         statusEl.innerHTML = `<span style="color:#dc2626"><i class="fas fa-ban"></i> <strong>Lokasi GPS Di Luar Wilayah:</strong> Koordinat perangkat Anda (${lat.toFixed(4)}, ${lng.toFixed(4)}) terdeteksi di luar wilayah Kabupaten Kolaka. Sistem pelaporan ini khusus untuk Kabupaten Kolaka.</span>`;
-                        alert('Lokasi GPS Anda saat ini terdeteksi di luar wilayah Kabupaten Kolaka. Laporan hanya dapat dibuat untuk kejadian di wilayah Kabupaten Kolaka. Silakan pilih titik kejadian secara manual pada peta.');
+                        alert('Lokasi GPS Anda saat ini terdeteksi di luar wilayah Kabupaten Kolaka. Laporan hanya dapat dibuat untuk wilayah Kabupaten Kolaka. Silakan pilih titik lokasi secara manual pada peta.');
                         return;
                     }
 
@@ -674,7 +674,7 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
 
             if (isNaN(lat) || isNaN(lng)) {
                 e.preventDefault();
-                alert('Titik lokasi pada peta wajib ditentukan!\n\nSilakan klik titik kejadian pada peta di dalam batas wilayah Kabupaten Kolaka.');
+                alert('Titik lokasi pada peta wajib ditentukan!\n\nSilakan klik titik lokasi pada peta di dalam batas wilayah Kabupaten Kolaka.');
                 document.getElementById('map').scrollIntoView({ behavior: 'smooth' });
                 return false;
             }
