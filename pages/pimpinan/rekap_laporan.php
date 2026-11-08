@@ -191,7 +191,7 @@ foreach ($laporan as $r) if (isset($sMap[$r['status']])) $sMap[$r['status']]++;
                                         <th>Kawasan Hutan</th>
                                         <th>Lokasi</th>
                                         
-                                        <th>Tgl Lapor</th>
+                                        <th>Tanggal Laporan</th>
                                         <th>Polisi</th>
                                         <th>Status</th>
                                     </tr>

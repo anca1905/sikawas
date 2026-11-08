@@ -112,10 +112,10 @@ $flash = getFlash();
                             </div>
                             <div class="card-body">
                                 <div class="info-row"><span class="info-label"><i class="fas fa-hashtag" style="color:#1a7a3f;margin-right:6px"></i>ID Laporan</span><span class="info-val">#<?= $r['id_laporan'] ?></span></div>
-                                <div class="info-row"><span class="info-label"><i class="fas fa-clock" style="color:#1a7a3f;margin-right:6px"></i>Tgl Lapor</span><span class="info-val"><?= formatTanggal($r['tanggal_lapor']) ?></span></div>
+                                <div class="info-row"><span class="info-label"><i class="fas fa-clock" style="color:#1a7a3f;margin-right:6px"></i>Tanggal Laporan</span><span class="info-val"><?= formatTanggal($r['tanggal_lapor']) ?></span></div>
                                 <div class="info-row"><span class="info-label"><i class="fas fa-tag" style="color:#1a7a3f;margin-right:6px"></i>Jenis Kejahatan</span><span class="info-val"><?= sanitize($r['nama_jenis']) ?></span></div>
                                 <div class="info-row"><span class="info-label"><i class="fas fa-map" style="color:#1a7a3f;margin-right:6px"></i>Kawasan Hutan</span><span class="info-val"><?= sanitize($r['nama_hutan']) ?></span></div>
-                                <div class="info-row"><span class="info-label"><i class="fas fa-map-marker-alt" style="color:#1a7a3f;margin-right:6px"></i>Lokasi Kejadian</span><span class="info-val"><?= sanitize($r['lokasi']) ?></span></div>
+                                <div class="info-row"><span class="info-label"><i class="fas fa-map-marker-alt" style="color:#1a7a3f;margin-right:6px"></i>Lokasi</span><span class="info-val"><?= sanitize($r['lokasi']) ?></span></div>
                                 <div class="info-row" style="flex-direction:column;gap:6px"><span class="info-label"><i class="fas fa-align-left" style="color:#1a7a3f;margin-right:6px"></i>Deskripsi</span><span class="info-val" style="line-height:1.7;background:#f8fafc;padding:12px;border-radius:8px"><?= nl2br(sanitize($r['deskripsi'])) ?></span></div>
                             </div>
                         </div>
@@ -265,7 +265,7 @@ $flash = getFlash();
         if (reportLat !== null && reportLng !== null) {
             mapDetail.setView([reportLat, reportLng], 14);
             const m = L.marker([reportLat, reportLng]).addTo(mapDetail);
-            m.bindPopup(`<b>Lokasi Kejadian #${<?= (int)$r['id_laporan'] ?>}</b><br><b>Jenis:</b> ${jenisText}<br><b>Lokasi:</b> ${lokasiText}<br><b>Koordinat:</b> ${reportLat}, ${reportLng}`).openPopup();
+            m.bindPopup(`<b>Lokasi Laporan #${<?= (int)$r['id_laporan'] ?>}</b><br><b>Jenis:</b> ${jenisText}<br><b>Lokasi:</b> ${lokasiText}<br><b>Koordinat:</b> ${reportLat}, ${reportLng}`).openPopup();
         } else {
             // Default center Sultra / Pomalaa jika koordinat tidak ada
             mapDetail.setView([-4.18, 121.60], 7);

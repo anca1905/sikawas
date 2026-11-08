@@ -1279,9 +1279,9 @@ $totalSelesai = count(array_filter($laporanKejadian, fn($l) => $l['status'] === 
                                     <?= nl2br(sanitize(mb_strimwidth($row['deskripsi'], 0, 160, '...'))) ?>
                                 </div>
 
-                                <!-- Card Footer: Tanggal Lapor & Link Peta -->
+                                <!-- Card Footer: Tanggal Laporan & Link Peta -->
                                 <div class="kejadian-card-footer">
-                                    <span><i class="fas fa-clock"></i> Dilaporkan: <?= date('d M Y', strtotime($row['tanggal_lapor'])) ?></span>
+                                    <span><i class="fas fa-clock"></i> Tanggal Laporan: <?= date('d M Y', strtotime($row['tanggal_lapor'])) ?></span>
                                     <?php if (!empty($row['latitude']) && !empty($row['longitude'])): ?>
                                         <a href="https://www.google.com/maps?q=<?= urlencode($row['latitude']) ?>,<?= urlencode($row['longitude']) ?>" target="_blank" class="btn-peta-link" title="Buka Titik Koordinat di Google Maps">
                                             <i class="fas fa-location-arrow"></i> Peta

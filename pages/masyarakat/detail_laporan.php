@@ -94,7 +94,7 @@ $flash = getFlash();
                                 <div class="info-row"><span class="info-label">Jenis Kejahatan</span><span class="info-val"><?= sanitize($r['nama_jenis']) ?></span></div>
                                 <div class="info-row"><span class="info-label">Kawasan Hutan</span><span class="info-val"><?= sanitize($r['nama_hutan']) ?></span></div>
                                 <div class="info-row"><span class="info-label">Lokasi</span><span class="info-val"><?= sanitize($r['lokasi']) ?></span></div>
-                                <div class="info-row"><span class="info-label">Tgl Dilaporkan</span><span class="info-val"><?= formatTanggal($r['tanggal_lapor']) ?></span></div>
+                                <div class="info-row"><span class="info-label">Tanggal Laporan</span><span class="info-val"><?= formatTanggal($r['tanggal_lapor']) ?></span></div>
                                 <div class="info-row" style="flex-direction:column;gap:6px"><span class="info-label">Deskripsi</span><span class="info-val" style="background:#f8fafc;padding:12px;border-radius:8px;line-height:1.7"><?= nl2br(sanitize($r['deskripsi'])) ?></span></div>
                             </div>
                         </div>
@@ -208,7 +208,7 @@ $flash = getFlash();
         if (reportLat !== null && reportLng !== null) {
             mapMasyarakat.setView([reportLat, reportLng], 14);
             const m = L.marker([reportLat, reportLng]).addTo(mapMasyarakat);
-            m.bindPopup(`<b>Titik Kejadian #${<?= (int)$r['id_laporan'] ?>}</b><br><b>Jenis:</b> ${jenisText}<br><b>Lokasi:</b> ${lokasiText}<br><b>Koordinat:</b> ${reportLat}, ${reportLng}`).openPopup();
+            m.bindPopup(`<b>Titik Lokasi #${<?= (int)$r['id_laporan'] ?>}</b><br><b>Jenis:</b> ${jenisText}<br><b>Lokasi:</b> ${lokasiText}<br><b>Koordinat:</b> ${reportLat}, ${reportLng}`).openPopup();
         } else {
             mapMasyarakat.setView([-4.18, 121.60], 7);
             fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(lokasiText)}`)

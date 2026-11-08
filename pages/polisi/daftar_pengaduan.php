@@ -88,7 +88,7 @@ foreach ($laporan as $r) {
                     <!-- Tampilan Peta Sebaran untuk Polisi -->
                     <div id="mapViewContainer" style="display:none;padding:16px">
                         <div style="font-size:13px;color:#64748b;margin-bottom:12px;display:flex;align-items:center;gap:6px">
-                            <i class="fas fa-info-circle" style="color:#1a7a3f"></i> Menampilkan <strong><?= count($mapPoints) ?></strong> titik kejadian dengan koordinat GPS dari tugas Anda.
+                            <i class="fas fa-info-circle" style="color:#1a7a3f"></i> Menampilkan <strong><?= count($mapPoints) ?></strong> titik lokasi dengan koordinat GPS dari tugas Anda.
                         </div>
                         <div id="polisiMap" style="height:480px;width:100%;border-radius:10px;border:1px solid #e2e8f0;z-index:1"></div>
                     </div>
@@ -105,7 +105,7 @@ foreach ($laporan as $r) {
                                         <th>Kawasan</th>
                                         <th>Lokasi</th>
                                         
-                                        <th>Tgl Lapor</th>
+                                        <th>Tanggal Laporan</th>
                                         <th>Status</th>
                                         <th>Aksi</th>
                                     </tr>

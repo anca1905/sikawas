@@ -252,8 +252,8 @@ $hutanList = $db->query("SELECT * FROM jenis_kawasan_hutan ORDER BY nama_hutan")
                                     </div>
 
                                     <div class="form-group">
-                                        <label class="form-label">Deskripsi Kejadian <span class="required">*</span></label>
-                                        <textarea name="deskripsi" class="form-control" rows="5" placeholder="Ceritakan secara detail kejadian yang Anda temukan..." required><?= sanitize($_POST['deskripsi'] ?? '') ?></textarea>
+                                        <label class="form-label">Deskripsi Laporan <span class="required">*</span></label>
+                                        <textarea name="deskripsi" class="form-control" rows="5" placeholder="Ceritakan secara detail informasi laporan Anda..." required><?= sanitize($_POST['deskripsi'] ?? '') ?></textarea>
                                         <div class="form-hint">Semakin detail deskripsi, semakin mudah bagi petugas untuk menindaklanjuti.</div>
                                     </div>
                                 </div>
